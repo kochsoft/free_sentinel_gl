@@ -1,0 +1,28 @@
+# Listing of the diverse glsl kernels used in Sentinel GL.
+# Primary key is the name of the program, secondary key
+# is the shader type. { VERTEX, FRAGMENT }
+#
+# Note: Each shader still needs registering within
+# ./resources/application.qrc
+# This file is for the use within Widget_OpenGl::compile_programs(..)
+
+KEY sky
+VERTEX   :/kernels/sky.vert
+FRAGMENT :/kernels/sky.frag
+
+KEY terrain
+VERTEX   :/kernels/terrain.vert
+FRAGMENT :/kernels/terrain.frag
+
+KEY sky_notex
+VERTEX   :/kernels/sky.vert
+FRAGMENT :/kernels/sky_notex.frag
+
+KEY terrain_notex
+VERTEX   :/kernels/terrain.vert
+FRAGMENT :/kernels/terrain_notex.frag
+
+KEY agent
+VERTEX   :/kernels/terrain.vert
+FRAGMENT :/kernels/terrain.frag
+

@@ -1,0 +1,45 @@
+# Planetary config data.
+# From simplest difficulty (greatest gravity) to the most difficult.
+# Structure:
+# Each planetary data block begins with a line of the form
+# KEY MAINKEY
+# This will cause the parsing function form_main::parse_config_file(..)
+# to create a new planetary entry of the map key MAINKEY.
+# This MAINKEY will be active until the next line starting with "KEY "
+# is encountered.
+# After that every line starts with a subkey like e.g. NAME.
+#
+# NAME: Used e.g. in the combobox in the game setup window.
+# DESC: Short description for the planet.
+# LIGHT: Light color for the planet in openGL RGB.
+
+KEY MASTER
+NAME The Masters' Planet
+DESC The great gravity on that world makes for rather flat terrain.
+LIGHT 0.2 0.8 0.2
+AGE 2
+
+KEY EARTH
+NAME Earth
+DESC Good visibility and moderate terrain.
+LIGHT 1.0 1.0 1.0
+AGE 1
+
+KEY SELENE
+NAME Selene
+DESC Earth' moon is a rather dreary place with glaring dusty deserts.
+LIGHT 1.0 1.0 1.0
+AGE 2
+
+KEY MARS
+NAME Mars
+DESC The red planet with its low planetary density makes for great mountains.
+LIGHT 0.8 0.6 0.6
+AGE 1
+
+KEY 67P
+NAME 67P
+DESC Churyumov–Gerasimenko is a rock in space with notoriously bumpy terrain.
+LIGHT 0.7 0.7 0.7
+AGE 0
+
