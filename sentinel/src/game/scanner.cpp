@@ -253,9 +253,10 @@ multimap<float, QPoint> Scanner::get_all_board_positions_in_h_fov(
 	QVector3D dir_left = A*dir;
 	A.rotate(h_fov, QVector3D(0,0,1)); // Inverts previous A _and_ turns on to +alpha! :-)
 	QVector3D dir_right = A*dir;
+	dir_right.setZ(0);
 	//< --------------------------------------------------------------
 	//> Building the field. ------------------------------------------
-	float step = 1./sqrt(2.);
+	float step = 1./(2*sqrt(2.));
 	int c_lambda0 = 0;
 	int c_lambda1 = 0;
 	QPoint first = get_board_pos_from_QVector3D(eye);
@@ -283,7 +284,7 @@ multimap<float, QPoint> Scanner::get_all_board_positions_in_h_fov(
 			float dist = dx*dx+dy*dy;
 			bool is_new = true;
 			{
-				// Check whether the new value is really new. If so ignore it.
+				// Check whether the new value is really new. If not so ignore it.
 				pair<multimap<float,QPoint>::const_iterator,
 					multimap<float,QPoint>::const_iterator> range = res.equal_range(dist);
 				for (multimap<float,QPoint>::const_iterator CI=range.first;
