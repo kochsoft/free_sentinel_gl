@@ -199,7 +199,7 @@ private:
 	 * Corrects it if gravity is minimal and age at the same time is
 	 * ancient leaing to worlds with great mountains but no plateaus
 	 * to scale them. */
-	static void harmonize_values(uint& n_gravity,
+	void harmonize_values(uint& n_gravity,
 		uint& n_age, uint& n_sentries, uint& n_energy);
 
 	/** Tool functions for create_challenge(..) Each is rigged thus that

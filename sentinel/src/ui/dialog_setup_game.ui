@@ -164,10 +164,10 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>15</number>
+         <number>10</number>
         </property>
         <property name="value">
-         <number>7</number>
+         <number>5</number>
         </property>
        </widget>
       </item>
@@ -466,6 +466,31 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit_campaign</tabstop>
+  <tabstop>pushButton_ok_campaign</tabstop>
+  <tabstop>horizontalSlider_challenge</tabstop>
+  <tabstop>pushButton_ok_challenge</tabstop>
+  <tabstop>comboBox_gravity</tabstop>
+  <tabstop>spinBox_sentries</tabstop>
+  <tabstop>comboBox_age</tabstop>
+  <tabstop>spinBox_energy</tabstop>
+  <tabstop>pushButton_ok_custom</tabstop>
+  <tabstop>comboBox_rotation_type</tabstop>
+  <tabstop>spinBox_psi_shield</tabstop>
+  <tabstop>spinBox_spin_period</tabstop>
+  <tabstop>spinBox_confidence</tabstop>
+  <tabstop>spinBox_self_spin</tabstop>
+  <tabstop>spinBox_object_resilience</tabstop>
+  <tabstop>spinBox_antagonist_fov</tabstop>
+  <tabstop>checkBox_random_scenery</tabstop>
+  <tabstop>checkBox_meanies</tabstop>
+  <tabstop>spinBox_rows</tabstop>
+  <tabstop>spinBox_cols</tabstop>
+  <tabstop>pushButton_restore_defaults</tabstop>
+  <tabstop>pushButton_close</tabstop>
+  <tabstop>pushButton_cancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

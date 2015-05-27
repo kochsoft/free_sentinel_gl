@@ -729,6 +729,7 @@ void Game::end_survey()
 
 bool Game::manifest_figure(QPoint pos, E_FIGURE_TYPE type, bool by_robot)
 {
+	//> Make sure SENTINEL_ABSORBED state is handled properly. .......
 	if (by_robot && status == E_GAME_STATUS::SENTINEL_ABSORBED &&
 		type != E_FIGURE_TYPE::ROBOT) return false;
 	Figure* base_figure = board_fg->get(pos);
@@ -737,6 +738,8 @@ bool Game::manifest_figure(QPoint pos, E_FIGURE_TYPE type, bool by_robot)
 	{
 		return false;
 	}
+	//< --------------------------------------------------------------
+	if (base_figure) base_figure = base_figure->get_top_figure();
 	if (by_robot)
 	{
 		int cost = Figure::get_energy_value(type);
@@ -746,17 +749,38 @@ bool Game::manifest_figure(QPoint pos, E_FIGURE_TYPE type, bool by_robot)
 		update_statusBar_energy(energy-cost);
 	}
 	float phi = landscape->get_random_angle();
+	float theta = 90.;
+	//> A new robot shall look at the player. ------------------------
 	if (type==E_FIGURE_TYPE::ROBOT && by_robot)
 	{
-		phi = player->get_viewer_data()->get_phi() - 180.;
-		if (phi < 0) phi+=360.;
+		// Getting phi for the new robot.
+		QVector3D dir(
+			player->get_site().x()-pos.x(),
+			player->get_site().y()-pos.y(),
+			0.
+		);
+		dir.normalize();
+		phi = 180.*acos(dir.x())/PI;
+		if (dir.y() < 0) phi = -phi+360.;
+		// Getting theta for the new robot.
+		float dx = player->get_site().x()-pos.x();
+		float dy = player->get_site().y()-pos.y();
+		float dist_h = sqrt(dx*dx+dy*dy);
+		float dz =
+			(base_figure ?
+			 (base_figure->get_altitude_above_square() +
+			  Figure::get_height(base_figure->get_type())) : 0) +
+			landscape->get_altitude(pos.x(),pos.y()) -
+			landscape->get_altitude(player->get_site().x(),player->get_site().y());
+		theta = 90.+180.*atan(dz/dist_h)/PI;
 	}
+	//< --------------------------------------------------------------
 	Figure* new_figure = new Figure(
 		type,
 		E_MATTER_STATE::MANIFESTING,
 		landscape->get_mesh(type),
 		phi,
-		90,
+		theta,
 		// Trees and co are STILL anyways. Note however, that trees may turn
 		// into meanies and meanies will base their rotation speeds on the
 		// "rotation speed" of the tree they are made of. So it _is_ sensible
@@ -767,7 +791,6 @@ bool Game::manifest_figure(QPoint pos, E_FIGURE_TYPE type, bool by_robot)
 	);
 	if (base_figure)
 	{
-		base_figure = base_figure->get_top_figure();
 		base_figure->set_figure_above(new_figure);
 	} else {
 		board_fg->set(pos,new_figure);
@@ -877,7 +900,6 @@ void Game::transfer(QPoint destination)
 	if (!new_robot) throw "No new robot found.";
 	new_robot = new_robot->get_top_figure();
 	if (new_robot->get_type()!=E_FIGURE_TYPE::ROBOT) throw "New robot is no robot.";
-	
 	player->set_site(destination);
 	float phi = new_robot->get_phi();
 	QVector3D eye(
@@ -887,8 +909,9 @@ void Game::transfer(QPoint destination)
 	);
 	eye = eye + Figure::get_eye_position_relative_to_figure(E_FIGURE_TYPE::ROBOT);
 	eye.setZ(eye.z() + (float)new_robot->get_altitude_above_square());
-	player->get_viewer_data()->set_site(eye);
-	player->get_viewer_data()->set_direction(phi,90);
+	Viewer_Data* vd = player->get_viewer_data();
+	vd->set_site(eye);
+	vd->set_direction(phi,new_robot->get_theta());
 	update_statusBar_text(tr("Transfer completed."));
 	update_game_status(E_UPDATE_GAME_STATUS_BY::TRANSFER);
 }

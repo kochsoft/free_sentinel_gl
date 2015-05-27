@@ -149,9 +149,9 @@ void Dialog_setup_game::onClick_campaign()
 	iss >> code;
 	if (setup_campaign_level(code))
 	{
-		this->accept();
 		last_close_setup_game_data->doSnapshot();
 		start_campaign();
+		this->accept();
 	} else {
 		ostringstream oss;
 		oss << QObject::tr("Given campaign code '").toStdString().c_str() <<
@@ -372,9 +372,9 @@ void Dialog_setup_game::harmonize_values(uint& n_gravity,
 {
 	// TODO: Optimize these criteria some time.
 	if (n_gravity > 3) { n_age = qMin(n_age, (uint)2); }
-	if (n_gravity > 3) { n_energy = qMin(n_energy, (uint)10); }
+	if (n_gravity > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)2); }
 	if (n_sentries > 3) { n_age = qMin(n_age, (uint)2); }
-	if (n_sentries > 3) { n_energy = qMin(n_energy, (uint)10); }
+	if (n_sentries > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)2); }
 }
 
 bool Dialog_setup_game::get_next_campaign_code(uint offset, uint& new_code)
