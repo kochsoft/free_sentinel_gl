@@ -34,7 +34,7 @@
 
 // Maximum offset for e.g. Dialog_setup_game::generate_campaign_code. Repitition
 // value for a given combination of n-values during campaign code generation.
-#define DEFAULT_CAMPAIGN_MAX_OFFSET 7
+#define DEFAULT_CAMPAIGN_MAX_OFFSET 1
 
 // Default time it takes to manifest or disintegrate an object in seconds.
 #define DEFAULT_FADING_TIME 1.0
