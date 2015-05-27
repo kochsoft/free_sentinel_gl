@@ -810,6 +810,7 @@ game->end_survey(); do_repaint=true;
 } else if (game->get_status()==E_GAME_STATUS::WON &&
 	game->get_game_type()==E_GAME_TYPE::CAMPAIGN) {
 	request_new_game();
+	request_paintGL();
 } else {
 pd->switch_cursor_mode();
 }
