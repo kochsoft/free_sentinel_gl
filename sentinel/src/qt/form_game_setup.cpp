@@ -144,6 +144,7 @@ Dialog_setup_game::~Dialog_setup_game()
 void Dialog_setup_game::onClick_campaign()
 {
 	QString text = get_ui()->lineEdit_campaign->text();
+	if (text.size() == 0) text = "0";
 	istringstream iss(text.toStdString());
 	uint code;
 	iss >> code;

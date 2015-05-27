@@ -120,14 +120,6 @@ void Game::update_game_status(E_UPDATE_GAME_STATUS_BY caller)
 			}
 		}
 	}
-	else if (status == E_GAME_STATUS::WON)
-	{
-		// TODO: Victor ceremony.
-	}
-	else if (status == E_GAME_STATUS::LOST)
-	{
-		// TODO: Loser ceremony.
-	}
 }
 
 void Game::match_current_robot_to_viewer_Data()

@@ -231,7 +231,7 @@ public:
 	
 	/** @return the matrix A := perspective*lookAt based on this object's data. */
 	QMatrix4x4 get_camera();
-	
+
 	string toString();
 	
 	/** Constructor for a new View_Data Object. */
