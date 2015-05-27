@@ -96,7 +96,9 @@ void Form_main::setup_Widget_OpenGl()
 	connect(uiMainWindow->openGLWidget,SIGNAL(fullscreen_key_pressed()),
 		this,SLOT(toggle_fullscreen()));
 	connect(uiMainWindow->openGLWidget,SIGNAL(request_new_game()),
-		this,SLOT(ok_setup_campaign()));
+		this,SLOT(request_new_game()));
+	connect(uiMainWindow->openGLWidget,SIGNAL(request_restart_game()),
+		this,SLOT(restart_game()));
 }
 
 void Form_main::setup_form()
@@ -284,6 +286,19 @@ void Form_main::ok_setup_challenge()
 void Form_main::ok_setup_custom()
 {
 	plugin_new_game(new_game_object(E_GAME_TYPE::CUSTOM, get_timestamp()));
+}
+
+void Form_main::request_new_game()
+{
+	Game* game = this->uiMainWindow->openGLWidget->get_game();
+	E_GAME_TYPE type = game ? game->get_game_type() : E_GAME_TYPE::CHALLENGE;
+	switch(type)
+	{
+		case E_GAME_TYPE::CAMPAIGN: ok_setup_campaign(); break;
+		case E_GAME_TYPE::CHALLENGE: ok_setup_challenge(); break;
+		case E_GAME_TYPE::CUSTOM: ok_setup_custom(); break;
+		default: throw "Unknown typ encountered.";
+	}
 }
 
 void Form_main::update_statusBar_text(QString text)

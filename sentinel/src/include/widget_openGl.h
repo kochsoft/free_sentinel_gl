@@ -152,9 +152,10 @@ signals:
 	/** If the user presses Esc signal this. */
 	void exit_requested();
 	/** Request to start a new game depending on the setup form settings.
-	 * Note that Game will see to it, that the setup form is updated
+	 * Note that the Game object will see to it, that the setup form is updated
 	 * if a campaign level was won. */
 	void request_new_game();
+	void request_restart_game();
 
 private:
 	// Will be set by initializeGL().

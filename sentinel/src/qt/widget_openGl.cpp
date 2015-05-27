@@ -800,20 +800,23 @@ void Widget_OpenGl::mouseReleaseEvent(QMouseEvent* e)
 	Qt::MouseButton button = e->button();
 	Viewer_Data* vd = game->get_player()->get_viewer_data();
 	Player_Data* pd = game->get_player();
+	E_GAME_STATUS status = game->get_status();
 	switch (button)
 	{
 		case Qt::MouseButton::LeftButton:
-// TODO: Clean up this mess!
-if (game->get_status()==E_GAME_STATUS::SURVEY)
-{
-game->end_survey(); do_repaint=true;
-} else if (game->get_status()==E_GAME_STATUS::WON &&
-	game->get_game_type()==E_GAME_TYPE::CAMPAIGN) {
-	request_new_game();
-	request_paintGL();
-} else {
-pd->switch_cursor_mode();
-}
+			if (status==E_GAME_STATUS::SURVEY)
+			{
+				game->end_survey();
+				request_paintGL();
+			} else if (status==E_GAME_STATUS::WON) {
+				request_new_game();
+				request_paintGL();
+			} else if (status==E_GAME_STATUS::LOST) {
+				request_restart_game();
+				request_paintGL();
+			} else {
+				pd->switch_cursor_mode();
+			}
 			break;
 		case Qt::MouseButton::RightButton:
 			game->do_u_turn();

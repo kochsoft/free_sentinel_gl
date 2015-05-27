@@ -149,6 +149,8 @@ private slots:
 	void ok_setup_campaign();
 	void ok_setup_challenge();
 	void ok_setup_custom();
+	// Depending on E_GAME_TYPE calls ok_setup_campaign, challenge or custom().
+	void request_new_game();
 	void update_statusBar_text(QString text);
 	/** Sets the energy meter to the new value. */
 	void update_statusBar_energy(int energy);
