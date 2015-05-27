@@ -36,7 +36,8 @@ void gpl_msg()
 	cout << endl << MHK_PROJECT_NAME << " V" << MHK_VERSION_MAJOR << "." << MHK_VERSION_MINOR << endl <<
 	"Copyright (C) 2015 Markus-Hermann Koch, mhk@markuskoch.eu" << endl << endl <<
     "This program comes with ABSOLUTELY NO WARRANTY; This is free software, " << endl <<
-    "and you are welcome to redistribute it under certain conditions;for details " << endl <<
+    "and you are welcome to redistribute it under certain conditions;" << endl <<
+	"for details " << endl <<
     "see menu Help->Gnu Public License within the GUI." << endl << endl;
 }
 

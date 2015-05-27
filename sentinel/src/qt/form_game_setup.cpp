@@ -422,7 +422,7 @@ bool Dialog_setup_game::setup_campaign_level(uint code)
 	{
 		harmonize_values(n_gravity, n_age, n_sentries, n_energy);
 		put_values_into_form(n_gravity, n_age, n_sentries, n_energy);
-		this->campaign_seed = offset;
+		this->campaign_seed = offset + get_level_number(code);
 	}
 	return valid;
 }
