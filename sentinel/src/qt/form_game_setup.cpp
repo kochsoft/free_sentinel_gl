@@ -215,7 +215,7 @@ void Dialog_setup_game::populate_combobox_rotation_type()
 	list.push_back(tr("To the right"));
 	list.push_back(tr("Randomized"));
 	ui_dialog_setup_game->comboBox_rotation_type->addItems(list);
-	ui_dialog_setup_game->comboBox_rotation_type->setCurrentIndex(2);
+	ui_dialog_setup_game->comboBox_rotation_type->setCurrentIndex(0);
 }
 
 uint Dialog_setup_game::get_n_gravity_from_form()
