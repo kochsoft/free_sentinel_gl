@@ -4,6 +4,9 @@ C++, Qt 5.4, OpenGL 2.0 remake of the Firebird C64 classic 'The Sentinel'. For L
 </p>
 <h3>About</h3>
 <p>
+There already is a Wiki page: <a href="https://github.com/kochsoft/free_sentinel_gl/wiki/Free-Sentinel-GL">https://github.com/kochsoft/free_sentinel_gl/wiki/Free-Sentinel-GL</a>
+</p>
+<p>
 This remake was written by Markus-Hermann Koch
 during the weeks between April 29th 2015 and May 25th 2015 as a self-tutoring project in order
 to learn how to work with openGL in C++. 3D models were done in Blender, textures where photographed
