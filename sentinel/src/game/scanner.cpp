@@ -521,8 +521,9 @@ vector<Antagonist_target> Scanner::get_antagonist_targets(QVector3D eye,
 		Figure* base = board_fg->get(site);
 		if (!base) continue;
 		E_FIGURE_TYPE base_type = base->get_type();
+		bool tree_on_top = base->get_top_figure()->get_type() == E_FIGURE_TYPE::TREE;
 		if (
-			(seek_trees && base_type != E_FIGURE_TYPE::TREE) ||
+			(seek_trees && !tree_on_top) ||
 			( (!seek_trees) && base_type != E_FIGURE_TYPE::BLOCK &&
 				base_type != E_FIGURE_TYPE::ROBOT )
 		) continue;
