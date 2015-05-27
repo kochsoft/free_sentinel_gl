@@ -137,6 +137,10 @@ private:
 	/** Player Data object. */
 	Player_Data* player;
 	
+	/** Once the sentinel starts disintegrating hyperjumps and mind
+	 * transfers are forbidden. */
+	bool sentinel_disintegrating;
+	
 	/** From the checkbox concerning meanies within setup_data. */
 	bool do_meanies;
 	

@@ -75,8 +75,8 @@ void Game::update_game_status(E_UPDATE_GAME_STATUS_BY caller)
 		// GONER_REMOVER calls only if The Sentinel was absorbed.
 		if (caller == E_UPDATE_GAME_STATUS_BY::GONER_REMOVER)
 		{
-			// Else an attack color will remain.
 			this->status = E_GAME_STATUS::SENTINEL_ABSORBED;
+			sentinel_disintegrating = false;
 			update_statusBar_text(get_game_status_string());
 			for (int x=0;x<landscape->get_width();x++)
 			{
@@ -86,7 +86,6 @@ void Game::update_game_status(E_UPDATE_GAME_STATUS_BY caller)
 					if (fig != 0) fig->set_spin_period(0);
 				}
 			}
-			//this->set_light_filtering_factor(QVector4D(1.,1.,1.,1.),2);
 		}
 		if (caller == E_UPDATE_GAME_STATUS_BY::HYPERSPACE ||
 			caller == E_UPDATE_GAME_STATUS_BY::ANTAGONIST)
@@ -791,6 +790,7 @@ void Game::disintegrate_figure(QPoint pos, bool by_robot)
 		if (fig->get_type()==E_FIGURE_TYPE::SENTINEL)
 		{
 			known_sounds->play("absorption_sentinel");
+			sentinel_disintegrating = true;
 		} else {
 			known_sounds->play("absorption");
 		}
@@ -800,8 +800,8 @@ void Game::disintegrate_figure(QPoint pos, bool by_robot)
 
 bool Game::hyperspace_request()
 {
-	if (status != E_GAME_STATUS::PRELIMINARY && status != E_GAME_STATUS::RUNNING &&
-		status != E_GAME_STATUS::TOWER_TAKEN)
+	if ((status != E_GAME_STATUS::PRELIMINARY && status != E_GAME_STATUS::RUNNING &&
+		status != E_GAME_STATUS::TOWER_TAKEN) || sentinel_disintegrating)
 	{
 		update_statusBar_text(tr("Hyperdrive not available at this time."));
 		return false;
@@ -867,6 +867,11 @@ void Game::hyperspace_jump()
 
 void Game::transfer(QPoint destination)
 {
+	if (sentinel_disintegrating)
+	{
+		update_statusBar_text(tr("Mind transfer failed."));
+		return;
+	}
 	match_current_robot_to_viewer_Data();
 	Figure* new_robot = board_fg->get(destination);
 	if (!new_robot) throw "No new robot found.";
@@ -975,6 +980,7 @@ Game::Game(E_GAME_TYPE type, uint seed, Setup_game_data* setup, QOpenGLWidget* p
 	this->status = E_GAME_STATUS::SURVEY;
 	this->hyperspace_timer = 0;
 	this->do_meanies = setup->checkBox_meanies;
+	this->sentinel_disintegrating = false;
 	reset_timer_helpers();
 	//> Setup Landscape object. --------------------------------------
 	this->landscape = new Landscape(
