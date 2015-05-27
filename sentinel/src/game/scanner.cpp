@@ -536,19 +536,43 @@ vector<Antagonist_target> Scanner::get_antagonist_targets(QVector3D eye,
 		if (type == E_FIGURE_TYPE::BLOCK) number_of_blocks--; // Don't count the target itself.
 		float alt_target_feet = (float)(landscape->get_altitude(site.x(),site.y()) +
 			number_of_blocks);
-		bool can_see_body = can_see_square(
+		bool can_see_sq = can_see_square(
 			landscape,
 			eye,
 			site,
-			alt_target_feet+ Figure::get_mesh_height(figure->get_type()),
-			type == E_FIGURE_TYPE::BLOCK // Blocks can be interacted with from below.
+			(float)(landscape->get_altitude(site.x(),site.y())),
+			false
 		);
-		bool can_see_base = can_see_body ? // No chance if you cannot even see the body.
-			can_see_square(landscape,eye,site,alt_target_feet,false) : false;
 		E_VISIBILITY vis = E_VISIBILITY::HIDDEN;
-		if (can_see_body) vis = E_VISIBILITY::PARTIAL;
-		if (can_see_base || (can_see_body && type==E_FIGURE_TYPE::BLOCK))
+		if (can_see_sq) // Anything goes if the square itself is visible!
+		{
 			vis = E_VISIBILITY::FULL;
+		} else {
+			// If the feet are visible when the square is not then
+			// obviously these feet stand on a block and may
+			// be interacted with from below.
+			bool can_see_feet = can_see_square(
+				landscape,
+				eye,
+				site,
+				alt_target_feet,
+				true
+			);
+			if (can_see_feet)
+			{
+				vis = E_VISIBILITY::FULL;
+			} else {
+				// If the feet are invisible but the body is seen it is in partial cover.
+				bool can_see_body = can_see_square(
+					landscape,
+					eye,
+					site,
+					alt_target_feet+ ((float)(Figure::get_mesh_height(figure->get_type()))),
+					true
+				);
+				if (can_see_body) vis = E_VISIBILITY::PARTIAL;
+			}
+		}
 		if (vis != E_VISIBILITY::HIDDEN)
 			res.push_back(Antagonist_target(vis,site));
 	}
