@@ -131,7 +131,6 @@ float Figure::get_mesh_height(E_FIGURE_TYPE type)
 	float res;
 	switch (type)
 	{
-		//TODO!
 		case E_FIGURE_TYPE::TREE: res = 2.50; break;
 		case E_FIGURE_TYPE::MEANIE: res = 2.00; break;
 		case E_FIGURE_TYPE::BLOCK: res = 1.00; break;
@@ -1320,7 +1319,6 @@ void Landscape::generate_landscape()
 	oss << "Assigning CONNECTION slope tiles." << endl;
 	
 	distribute_objects();
-	// TODO! Hier war ich.
 
 	send_board_sq_to_GPU();
 	oss << "Conveying board data to GPU." << endl;

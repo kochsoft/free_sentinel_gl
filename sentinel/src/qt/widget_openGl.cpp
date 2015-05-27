@@ -88,7 +88,7 @@ Widget_OpenGl::Widget_OpenGl(QWidget* parent, Qt::WindowFlags flags)
 	this->is_user_paused = false;
 	this->do_repaint = true;
 	this->timer_framerate = 0;
-	this->framerate = 24; // 24 TODO: This is a setup parameter!
+	this->framerate = DEFAULT_FRAMERATE;
 	// https://www.opengl.org/archives/resources/faq/technical/depthbuffer.htm
 	// First step for depth testing. Also need glEnable(GL_DEPTH_TEST),
 	// zNear and zFar clipping planes, and GL_DEPTH_BUFFER_BIT sent to glClear(..).
@@ -707,11 +707,6 @@ void Widget_OpenGl::draw_landscape(float fade)
 		}
 	}
 	//< --------------------------------------------------------------
-// TODO: DEBUG-CODE. REMOVE LATER ON.
-//QMatrix4x4 A;
-//A.setToIdentity(); A.translate(0,29,4); draw_terrain_object(objects["sentinel_tower"],A,fade);
-//A.setToIdentity(); A.translate(29,0,4); draw_terrain_object(objects["block"],A,fade);
-//A.setToIdentity(); A.translate(0,0,4); draw_terrain_object(objects["tree"],A,fade);
 }
 
 void Widget_OpenGl::setup_light_source(QVector4D light_color,
@@ -808,7 +803,7 @@ void Widget_OpenGl::mouseReleaseEvent(QMouseEvent* e)
 	switch (button)
 	{
 		case Qt::MouseButton::LeftButton:
-// TODO: Clean up this debug code!
+// TODO: Clean up this mess!
 if (game->get_status()==E_GAME_STATUS::SURVEY)
 {
 game->end_survey(); do_repaint=true;
@@ -978,7 +973,6 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 	Figure* figure=0;
 	E_POSSIBLE_PLAYER_ACTION action = game->get_mouse_target(
 		get_Gl_mouse_x(true), get_Gl_mouse_y(true), board_pos, figure);
-	// TODO: Include accompanying sound effects!
 	switch(e->key())
 	{
 		case Qt::Key_Escape: exit_requested(); break;
@@ -1079,15 +1073,14 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 				request_paintGL();
 			}
 			break;
-// DEBUGCODE! TODO. Remove me.
-case Qt::Key_W: // Where am I?
-{
-QPoint pos = game->get_player()->get_site();
-ostringstream oss;
-oss << "I am at (" << pos.x() << ", " << pos.y() << ")";
-update_parent_statusBar_text(oss.str().c_str());
-}
-break;
+		case Qt::Key_W: // Where am I? Yes, debug code. But I like it nonetheless :-)
+			{
+				QPoint pos = game->get_player()->get_site();
+				ostringstream oss;
+				oss << "I am at (" << pos.x() << ", " << pos.y() << ")";
+				update_parent_statusBar_text(oss.str().c_str());
+			}
+			break;
 // ----------
 		default: e->ignore(); // Propagate this keypress to parent QObject.
 	}

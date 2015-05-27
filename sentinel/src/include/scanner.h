@@ -139,22 +139,6 @@ private:
 	bool is_square_under_xray_mouse(float mouse_gl_x, float mouse_gl_y,
 		Square* square, const QMatrix4x4& camera);
 
-	/** Lower part of get_all_board_positions_in_line() requiring only
-	 * eye position and viewer direction in world coordinates. */
-	vector<QPoint> get_all_board_positions_in_line(
-		QVector3D eye, QVector3D dir, int width, int height);
-	
-	/** Completely in world coordinates this function builds the candidates
-	 * list required for some of the other functions.
-	 * @param float mouse_gl_x, mouse_gl_y: Mouse coordinates in [-1,1]^2.
-	 * @param Viewer_Data* viewer_data: Needed for the direction of view.
-	 * @param int width, height: Board dimensions.
-	 * @return a vector, ordered by increasing distance from the eye, of
-	 *   those squares on the board, the described line of sight would traverse. */
-	vector<QPoint> get_all_board_positions_in_line(
-		float mouse_gl_x, float mouse_gl_y, Viewer_Data* viewer_data,
-		int width, int height);
-
 public: // Public for the benefit of Game::antagonist_attack()
 	/** Turns the given multimap into an ordered vector. */
 	vector<QPoint> convert_ordered_multimap_to_vector(multimap<float,QPoint>&);

@@ -732,6 +732,12 @@ bool Game::manifest_figure(QPoint pos, E_FIGURE_TYPE type, bool by_robot)
 {
 	if (by_robot && status == E_GAME_STATUS::SENTINEL_ABSORBED &&
 		type != E_FIGURE_TYPE::ROBOT) return false;
+	Figure* base_figure = board_fg->get(pos);
+	if (base_figure && base_figure->get_type() == E_FIGURE_TYPE::TOWER &&
+		base_figure->get_above_figure() != 0)
+	{
+		return false;
+	}
 	if (by_robot)
 	{
 		int cost = Figure::get_energy_value(type);
@@ -760,7 +766,6 @@ bool Game::manifest_figure(QPoint pos, E_FIGURE_TYPE type, bool by_robot)
 		landscape->get_antagonist_fov(),
 		landscape->get_antagonist_fading_time()
 	);
-	Figure* base_figure = board_fg->get(pos);
 	if (base_figure)
 	{
 		base_figure = base_figure->get_top_figure();
@@ -837,7 +842,6 @@ void Game::hyperspace_jump()
 	
 	if (new_site.x()==-1)
 	{
-		// TODO: Random-Manifest up to 3 trees for energy preservation.
 		update_statusBar_text(tr("Hyperjump aborted. Wormhole unstable."));
 		return;
 	}

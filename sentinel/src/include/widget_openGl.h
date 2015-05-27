@@ -107,7 +107,6 @@ struct Display_Data
 		flags_glEnable.push_back(GL_BLEND); // Allow for transparency.
 		flags_glEnable.push_back(GL_DEPTH_TEST); // Closer pixels obstruct farther pixels.
 		flags_glEnable.push_back(GL_MULTISAMPLE); // Smooth the edges.
-// TODO! Reactivate culling!
 		flags_glEnable.push_back(GL_CULL_FACE); // Only see the top of faces.
 	}
 };

@@ -193,7 +193,6 @@ public:
 	 * Sentinel, sentry, or meanie. */
 	bool is_antagonist();
 
-	// TODO! Have my specifics within a config file!
 	/** Some figures have eyes (the robot, sentinel, sentry and meanie).
 	 * These eyes have positions in space.
 	 * @return Said eye position in object coordinates. This is a constant

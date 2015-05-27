@@ -127,6 +127,8 @@ bool Scanner::is_figure_under_xray_mouse(float mouse_gl_x, float mouse_gl_y,
 		QVector4D a = vertices[elements[3*j]];
 		QVector4D b = vertices[elements[3*j+1]];
 		QVector4D c = vertices[elements[3*j+2]];
+	if (a.z()<-1. || a.z()>1. || b.z()<-1. || b.z()>1. ||
+		c.z()<-1. || c.z()>1.) return false;
 		if (is_in_triangle(mouse_gl_x,mouse_gl_y,a,b,c)) return true;
 	}
 	return false;
@@ -200,39 +202,6 @@ QVector3D Scanner::get_mouse_direction(float mouse_gl_x, float mouse_gl_y,
 	return dir;
 }
 
-vector<QPoint> Scanner::get_all_board_positions_in_line(QVector3D eye, QVector3D dir,
-	int width, int height)
-{
-	vector<QPoint> res;
-	if (dir.x() == 0 && dir.y() == 0) return res;
-	float step =.01;
-	QPoint last = get_board_pos_from_QVector3D(eye);
-	QVector3D current = eye + step*dir;
-	// Note that e.g. (0,0) is the _center_ of the corner square. Its radius is 0.5.
-	while (current.z() >= -1.)
-	{
-		QPoint next = get_board_pos_from_QVector3D(current);
-		if (next != last)
-		{
-			last = next;
-			if (next.x() < 0 || next.x() >= width || next.y() < 0 || next.y() >= height)
-				break;
-			res.push_back(next);
-		}
-		current += step * dir;
-	}
-	return res;
-}
-
-vector<QPoint> Scanner::get_all_board_positions_in_line(
-	float mouse_gl_x, float mouse_gl_y, Viewer_Data* viewer_data,
-	int width, int height)
-{
-	QVector3D dir = get_mouse_direction(mouse_gl_x, mouse_gl_y, viewer_data);
-	QVector3D eye = viewer_data->get_site();
-	return get_all_board_positions_in_line(eye,dir,width,height);
-}
-
 multimap<float, QPoint> Scanner::get_all_board_positions_in_h_fov(
 	QVector3D eye, QVector3D dir, float h_fov, int width, int height)
 {
@@ -241,44 +210,50 @@ multimap<float, QPoint> Scanner::get_all_board_positions_in_h_fov(
 	//> Getting left and right view directions. ----------------------
 	// Normalize dir such that |(x,y)|==1.0.
 	{
-		float h = dir.x()*dir.x()+dir.y()*dir.y();
+		float h = sqrt(dir.x()*dir.x()+dir.y()*dir.y());
 		if (h==0) return res;
 		dir.setX(dir.x()/h);
 		dir.setY(dir.y()/h);
 		dir.setZ(dir.z()/h);
 	}
 	float alpha = h_fov / 2.;
+	float sa = sin(alpha*PI/180.);
+	if (sa < 0) sa = -sa;
 	QMatrix4x4 A; A.setToIdentity();
 	A.rotate(-alpha, QVector3D(0,0,1));
 	QVector3D dir_left = A*dir;
 	A.rotate(h_fov, QVector3D(0,0,1)); // Inverts previous A _and_ turns on to +alpha! :-)
 	QVector3D dir_right = A*dir;
-	dir_right.setZ(0);
+	// Note that dir_1.z() == 0.
+	QVector3D dir_1 = dir_right-dir_left;
+	dir_1.normalize();
 	//< --------------------------------------------------------------
 	//> Building the field. ------------------------------------------
-	float step = 1./(2*sqrt(2.));
+	float step = 1./sqrt(2.);
 	int c_lambda0 = 0;
 	int c_lambda1 = 0;
 	QPoint first = get_board_pos_from_QVector3D(eye);
 	while (true) // Looping through lambda0
 	{
 		QVector3D eye_plus_left = eye + ((float)c_lambda0)*step*dir_left;
-		QPoint left_point = get_board_pos_from_QVector3D(eye_plus_left);
-		if (left_point.x() < 0 || left_point.x() >= width ||
-			left_point.y() < 0 || left_point.y() >= height)
-		{
-			break;
-		}
+//		if ((float)c_lambda0*step > 2. && eye_plus_left.z() < -step) break;
+		bool found_any_valid = false;
 		while (true) // Looping through lambda1
 		{
-			QVector3D current = eye_plus_left + ((float)c_lambda1)*step*dir_right;
-			if (c_lambda1 > 2 && current.z() < -step) break;
+			QVector3D current = eye_plus_left + ((float)c_lambda1)*step*dir_1;
 			QPoint next = get_board_pos_from_QVector3D(current);
 			if (next == first || next.x() < 0 || next.x() >= width ||
 				next.y() < 0 || next.y() >= height)
 			{
-				break;
+				if ((float)c_lambda1 <= 2.*sa*((float)c_lambda0))
+				{
+					// Never stop unless the full line sweep was completed.
+					c_lambda1++;
+					continue;
+				}
 			}
+			if ((float)c_lambda1 > 2.*sa*((float)c_lambda0)) break;
+			found_any_valid = true;
 			float dx = ((float)(next.x()))-eye.x();
 			float dy = ((float)(next.y()))-eye.y();
 			float dist = dx*dx+dy*dy;
@@ -293,9 +268,13 @@ multimap<float, QPoint> Scanner::get_all_board_positions_in_h_fov(
 					if (CI->second == next) { is_new = false; break; }
 				}
 			}
-			if (is_new) res.insert(pair<float,QPoint>(dist,next));
+			if (is_new)
+			{
+				res.insert(pair<float,QPoint>(dist,next));
+			}
 			c_lambda1++;
 		}
+		if ((!found_any_valid) && (float)c_lambda0*step > 2.) break;
 		c_lambda1 = 0;
 		c_lambda0++;
 	}
@@ -408,8 +387,9 @@ QPoint_Figure Scanner::get_figure_under_mouse(float mouse_gl_x, float mouse_gl_y
 	return QPoint_Figure(); // Nothing found.
 }
 
-/*
+
 // DEBUGGING CODE. REMOVE LATER ON. ---
+/*
 namespace
 {
 void print_mm(multimap<float,QPoint> mm)
