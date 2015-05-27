@@ -78,11 +78,7 @@ cmake_minimum_required(VERSION 2.8.11)
 #   export CMAKE_PREFIX_PATH=[directory containing Qt5Widgets .cmake]
 # on the console works as well.
 
-<<<<<<< HEAD
-#set(CMAKE_PREFIX_PATH "/home/kochmn/sw/Qt/Qt_5_4/5.4/gcc_64/lib/cmake/")
-=======
 # set(CMAKE_PREFIX_PATH "/home/kochmn/sw/Qt/Qt_5_4/5.4/gcc_64/lib/cmake/")
->>>>>>> 38563034c61a4274bfe37ab2da909e53ad6c9d49
 #< -------------------------------------------------------------------
 
 project(sentinel)
