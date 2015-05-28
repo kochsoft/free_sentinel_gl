@@ -1,6 +1,6 @@
 <p>
 # free_sentinel_gl
-C++, Qt 5.4, OpenGL 2.0 remake of the Firebird C64 classic 'The Sentinel'. For Linux, using CMake.
+C++, Qt 5.4, OpenGL 2.1 remake of the Firebird C64 classic 'The Sentinel'. For Linux, using CMake.
 </p>
 <h3>About</h3>
 <p>
@@ -12,16 +12,14 @@ during the weeks between April 29th 2015 and May 25th 2015 as a self-tutoring pr
 to learn how to work with openGL in C++. 3D models were done in Blender, textures where photographed
 using my trusty smartphone and put together using the Gimp. Sound samples I took using the App
 "Smart Voice Recorder" (writing directly into .wav files) and pepped them for the game using
-Audacity. Development itself was done using both vim and KDevelop. The eye icon of the game is
-based on an Eye of Horus icon I found on http://www.clipartbest.com/. I would like to credit the
-artist here, however no name was attached to the graphic.
+Audacity. Development itself was done using both vim and KDevelop.
 </p>
 <h3>Installation procedure</h3>
 <p>
 So far this program was written with Linux in mind. However, being based on pure Qt 5.4 it should
 be a quite straight-forward task to bring it to alternative operative systems.
 
-<h4>Prerequisits</h4>
+<h4>Prerequisites</h4>
 On a Linux environment you are going to need
 <ol>
 <li>cmake support for compilation</li>
@@ -57,3 +55,13 @@ set(CMAKE_PREFIX_PATH "/home/kochmn/sw/Qt/Qt_5_4/5.4/gcc_64/lib/cmake/")
 You will find such a line commented out within CMakeLists.txt. Just decomment it and adjust it
 as befits your own system.
 </p>
+<p>
+<ul>
+<li>The eye icon of the game is based on an Eye of Horus icon I found on <a href="http://www.clipartbest.com/">http://www.clipartbest.com/</a>. I would like to credit the artist here, however no name was attached to the graphic.
+</li>
+<li>The dome image of the mars scenery is based on a picture taken by the Pathfinder in 1999 as depicted in Wikipedia: <a href="http://en.wikipedia.org/wiki/Extraterrestrial_skies">http://en.wikipedia.org/wiki/Extraterrestrial_skies</a>. The original of the icon hidden on that scene may be found <a href="http://en.wikipedia.org/wiki/Curiosity_%28rover%29">here</a>.
+</li>
+<li>My general gratitude goes to the people who seemingly enjoy answering noob questions on the <a href="stackoverflow.com">stackoverflow.com</a> forum. There were some times I would have been seriously stuck without their help.</li>
+</ul>
+</p>
+
