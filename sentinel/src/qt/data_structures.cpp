@@ -43,6 +43,21 @@ bool Known_Sceneries::is_supported(E_SCENERY scenery)
 		{ if (*CI == scenery) { found_it = true; break; } }
 	return found_it;
 }
+
+string Known_Sceneries::toString(E_SCENERY scenery)
+{
+	string key;
+	switch (scenery)
+	{
+		case E_SCENERY::MASTER: key = "MASTER"; break;
+		case E_SCENERY::EUROPE: key = "EUROPE"; break;
+		case E_SCENERY::SELENE: key = "SELENE"; break;
+		case E_SCENERY::MARS:   key = "MARS"; break;
+		case E_SCENERY::ASTEROID: key = "ASTEROID"; break;
+		default: key = "EUROPE"; break;
+	}
+	return key;
+}
 //< ------------------------------------------------------------------
 
 //> Vertex_Data. -----------------------------------------------------

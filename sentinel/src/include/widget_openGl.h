@@ -196,6 +196,7 @@ public:
 	void set_io(Io_Qt* io) { this->io = io; }
 	void set_game(Game* game) { this->game = game; }
 	void set_scenery(E_SCENERY scenery) { this->scenery = scenery; }
+	void set_scenery_light(QVector4D color) { this->light_color = color; }
 	Game* get_game() { return this->game; }
 	float get_framerate() { return this->framerate; }
 	Mesh_Data* get_mesh_data_connection();

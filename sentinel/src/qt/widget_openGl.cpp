@@ -682,7 +682,6 @@ void Widget_OpenGl::draw_dome(QMatrix4x4& camera, float fade)
 	program->setUniformValue(handle_A, A);
 
 	// Assigning the light color.
-// TODO: light_color should depend on general game environment information from gravity.txt!
 	program->setUniformValue(handle_color_light, light_color*light_filtering_factor);
 
 	program->setUniformValue(handle_fade, fade);
@@ -767,14 +766,14 @@ void Widget_OpenGl::draw_landscape(float fade)
 					B.rotate(f->get_phi(),QVector3D(0,0,1));
 					float scale = get_appropriate_scale(f);
 					B.scale(scale);
-					draw_terrain_object(f->get_mesh_prototype(),camera,B,f->get_fade());
+					draw_terrain_object(f->get_mesh_prototype(),camera,B,f->get_fade()*fade);
 					if (f->get_state()==E_MATTER_STATE::TRANSMUTING && scale > 0)
 					{
 						float old_mesh_fade = 1-f->get_fade();
 						B.scale(old_mesh_fade/scale);
 						Mesh_Data* old_mesh = f->get_old_mesh();
 						if (old_mesh)
-							draw_terrain_object(old_mesh,camera,B,old_mesh_fade);
+							draw_terrain_object(old_mesh,camera,B,old_mesh_fade*fade);
 					}
 					// The next figure in the stack will be on the new figure.
 					A.translate(QVector3D(0,0,Figure::get_height(f->get_type())));
@@ -851,7 +850,7 @@ void Widget_OpenGl::paintGL()
 {
 	if (!(do_repaint && initializeGL_ok && game)) { return; }
 	clear_screen();
-	draw_landscape(1); // TODO: Fade really is a dynamic parameter governed by this->game.
+	draw_landscape(this->light_color.w());
 	do_repaint = false;
 }
 

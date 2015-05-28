@@ -52,7 +52,7 @@ using namespace mhk_gl;
 namespace display
 {
 /** If you ever change this enum pls also update
- * All_Sceneries::number_of_known_sceneries().
+ * Known_Sceneries::number_of_known_sceneries() and Known_Sceneries::toString().
  * TODO: Is there really no better way to determine the size of an enum? */
 enum E_SCENERY { MASTER, EUROPE, SELENE, MARS, ASTEROID };
 enum E_VISIBILITY { HIDDEN, PARTIAL, FULL };
@@ -70,6 +70,8 @@ public:
 	bool is_supported(E_SCENERY scenery);
 	/** @return the size E_SCENERY in elements. */
 	static int number_of_known_sceneries() { return 5; }
+	/** Translate the enum code into a string. */
+	static string toString(E_SCENERY);
 	/** Standard constructor adding all supported sceneries to this->sceneries. */
 	Known_Sceneries()
 	{

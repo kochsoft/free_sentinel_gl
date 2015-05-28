@@ -123,8 +123,10 @@ Game* Form_main::new_game_object(E_GAME_TYPE type, uint seed, Setup_game_data* g
 	if (!game_data) game_data = dialog_setup_game->get_game_data();
 	if (!game_data) throw "No non-0 game data available.";
 	if (!game_data->is_valid()) throw "Invalid game data was passed!";
-	uiMainWindow->openGLWidget->set_scenery(get_scenery_by_selection(
-		game_data->checkBox_random_scenery ? -1 : game_data->combobox_gravity));
+	E_SCENERY scenery = get_scenery_by_selection(
+		game_data->checkBox_random_scenery ? -1 : game_data->combobox_gravity);
+	uiMainWindow->openGLWidget->set_scenery(scenery);
+	uiMainWindow->openGLWidget->set_scenery_light(get_light_color_by_scenery(scenery));
 	Game* game = new Game(
 		type,
 		seed,
@@ -272,6 +274,16 @@ E_SCENERY Form_main::get_scenery_by_selection(int index)
 		res = E_SCENERY::EUROPE;
 	}
 	return res;
+}
+
+QVector4D Form_main::get_light_color_by_scenery(E_SCENERY scenery)
+{
+	string key = Known_Sceneries::toString(scenery);
+	map<string,string> light_strs = Io_Qt::parse_by_subkey(planetary_data, "LIGHT");
+	istringstream iss(light_strs.at(key));
+	float r, g, b, a;
+	iss >> r; iss >> g; iss >> b; iss >> a;
+	return QVector4D(r,g,b,a);
 }
 
 void Form_main::plugin_new_game(Game* game)

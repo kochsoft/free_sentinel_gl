@@ -112,6 +112,9 @@ private:
 	 * @return the scenery setting appropriate for the selection in the gravity
 	 * cobobox.*/
 	E_SCENERY get_scenery_by_selection(int);
+	
+	/** Return the light color as stated within misc/gravity.txt. */
+	QVector4D get_light_color_by_scenery(E_SCENERY);
 
 	/** Properly starts a new game using the given game pointer.
 	 * Tool function for ok_setup_*() and the constructor. Also

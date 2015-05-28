@@ -17,30 +17,30 @@
 KEY MASTER
 NAME The Masters' Planet
 DESC The strong gravity on that world makes for rather flat terrain.
-LIGHT 0.2 0.8 0.2
+LIGHT 0.8 1.0 0.7 1.0
 SCENERY MASTER
 
 KEY EUROPE
 NAME Earth
 DESC Good visibility and moderate terrain.
-LIGHT 1.0 1.0 1.0
+LIGHT 1.0 1.0 1.0 1.0
 SCENERY EUROPE
 
 KEY SELENE
 NAME Selene
 DESC Earth' moon is a rather dreary place with glaring dusty deserts.
-LIGHT 1.0 1.0 1.0
+LIGHT 1.2 1.2 1.2 1.0
 SCENERY SELENE
 
 KEY MARS
 NAME Mars
 DESC The red planet with its low planetary density makes for great mountains.
-LIGHT 0.8 0.6 0.6
+LIGHT 0.8 0.6 0.6 1.0
 SCENERY MARS
 
 KEY ASTEROID
 NAME 67P
 DESC Churyumov–Gerasimenko is a rock in space with notoriously bumpy terrain.
-LIGHT 0.7 0.7 0.7
+LIGHT 0.7 0.7 0.7 1.0
 SCENERY ASTEROID
 
