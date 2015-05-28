@@ -165,6 +165,7 @@ public:
 	float get_phi() { return phi; }
 	void set_phi(float phi) { this->phi = phi; }
 	float get_theta() { return theta; }
+	void set_theta(float theta) { this->theta = theta; }
 	float get_fov() { return fov; }
 	float get_spin_period() { return spin_period; }
 	void set_spin_period(float spin_period) { this->spin_period = spin_period; }

@@ -130,6 +130,8 @@ void Game::match_current_robot_to_viewer_Data()
 	if (robot->get_type() != E_FIGURE_TYPE::ROBOT) throw "Invalid player type detected?!";
 	float phi = player->get_viewer_data()->get_phi();
 	robot->set_phi(phi);
+	float theta = player->get_viewer_data()->get_theta();
+	robot->set_theta(theta);
 }
 
 bool Game::is_stack_of_stable_blocks(Figure* figure)
