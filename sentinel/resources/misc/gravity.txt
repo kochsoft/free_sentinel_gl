@@ -40,7 +40,7 @@ SCENERY MARS
 
 KEY ASTEROID
 NAME 67P
-DESC Churyumov–Gerasimenko is a rock in space with notoriously bumpy terrain.
+DESC Churyumov–Gerasimenko is a shady rock with notoriously bumpy terrain.
 LIGHT 0.7 0.7 0.7 1.0
 SCENERY ASTEROID
 
