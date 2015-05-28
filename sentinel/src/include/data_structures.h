@@ -51,7 +51,30 @@ using namespace mhk_gl;
 
 namespace display
 {
+enum E_SCENERY { MASTER, EUROPE, SELENE, MARS, ASTEROID };
 enum E_VISIBILITY { HIDDEN, PARTIAL, FULL };
+
+/** Helper to iterate over all possible sceneries. */
+class All_Sceneries
+{
+private:
+	vector<E_SCENERY> sceneries;
+	
+public:
+	/** Getter for a pointer at this->sceneries. */
+	vector<E_SCENERY>* get_sceneries() { return &(this->sceneries); }
+	/** @return true if and only if the given scenery may be found in this->sceneries. */
+	bool is_supported(E_SCENERY scenery);
+	/** Standard constructor adding all supported sceneries to this->sceneries. */
+	All_Sceneries()
+	{
+//		sceneries.push_back(E_SCENERY::MASTER); // TODO: Decomment these lines when ready.
+		sceneries.push_back(E_SCENERY::EUROPE);
+//		sceneries.push_back(E_SCENERY::SELENE);
+//		sceneries.push_back(E_SCENERY::MARS);
+//		sceneries.push_back(E_SCENERY::ASTEROID);
+	}
+};
 
 /** An antagonist always acts on the top of any stack. Visibility is relative to that. */
 struct Antagonist_target

@@ -117,23 +117,7 @@ struct Known_Texture_Resources
 	map<string,string> textures;
 
 	/** Default constructor setting sensible defaults. */
-	Known_Texture_Resources()
-	{
-		// Note: Start the name with "v_" for vertical mirroring
-		// and with "h_" for horizontal mirroring.
-		textures["sky_europe"] = ":/graphics/sky_europe.png";
-		textures["foundation_europe"] = ":/graphics/dome_foundation_europe.png";
-		textures["sq_connection_europe"] = ":/graphics/connection_europe.png";
-		textures["sq_odd_europe"] = ":/graphics/square_light_europe.png";
-		textures["sq_even_europe"] = ":/graphics/square_dark_europe.png";
-		textures["tree"] = ":/graphics/tree.png";
-		textures["sentinel_tower"] = ":/graphics/sentinel_tower.png";
-		textures["sentinel"] = ":/graphics/sentinel.png";
-		textures["sentry"] = ":/graphics/sentry.png";
-		textures["robot"] = ":/graphics/robot.png";
-		textures["meanie"] = ":/graphics/meanie.png";
-		textures["block"] = ":/graphics/block.png";
-	}
+	Known_Texture_Resources();
 };
 
 class Widget_OpenGl : public QOpenGLWidget, public QOpenGLFunctions
@@ -169,6 +153,8 @@ private:
 	bool is_paused;
 	// A strong pause mode requested by the user. Needs to be deactivated by the user.
 	bool is_user_paused;
+	// Active scenery setting.
+	E_SCENERY scenery;
 	
 	Io_Qt* io;
 	static Display_Data default_display;
@@ -180,8 +166,7 @@ private:
 	vector<QOpenGLShader*> shaders;
 	/** Texure objects by resource their key in this->known_texture_resources. */
 	map<string, QOpenGLTexture*> textures;
-	/** All kinds of objects required for the game with the single exception
-	 * of the game board landscape itself. */
+	/** All kinds of 3D objects required for the game. */
 	map<string,Mesh_Data*> objects;
 	/** How many frames per seconds should be endeavoured? */
 	float framerate;
@@ -194,7 +179,6 @@ private:
 	QVector4D light_color;
 	/** How much minimum luminescence will have surfaces not hit by light source? */
 	float light_ambience;
-
 	/** Pointer to the game object. */
 	Game* game;
 	
@@ -211,6 +195,7 @@ private:
 public:
 	void set_io(Io_Qt* io) { this->io = io; }
 	void set_game(Game* game) { this->game = game; }
+	void set_scenery(E_SCENERY scenery) { this->scenery = scenery; }
 	Game* get_game() { return this->game; }
 	float get_framerate() { return this->framerate; }
 	Mesh_Data* get_mesh_data_connection();
@@ -224,6 +209,18 @@ public:
 	Mesh_Data* get_mesh_data_block();
 	Mesh_Data* get_mesh_data_meanie();
 
+	/** Hash keys for Mesh_Data, textures, lighting colors as well as some
+	 * file names bear a code string denoting to which scenery they belong.
+	 * This function offers a centralized facility to get these keys right.
+	 * @param string prefix: Will be prefixed to the result. If not empty
+	 *   a "_" will be used for the connection.
+	 * @param E_SCENERY scenery: Scenery setting the suffix will depend upon.
+	 * @param string suffix: Will be suffixed to the result.
+	 * @return The complete scenery string. E.g.: "sky_europe.png"
+	 *   for prefix=="sky", scenery==EUROPE, suffix=".png" */
+	static string get_scenery_resource_string(
+		string prefix, E_SCENERY scenery, string suffix="");
+	
 	//> Constructor, destructor. -------------------------------------
     Widget_OpenGl(QWidget* parent=0, Qt::WindowFlags flags=0);
 	virtual ~Widget_OpenGl();

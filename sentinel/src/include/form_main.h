@@ -104,7 +104,15 @@ private:
 	
 	/** @return the linux timestamp. Useful as a random seed for qsrand(). */
 	static uint get_timestamp();
-	
+
+	/** Parses misc/gravity.txt in order to get the appropriate E_SCENERY for the
+	 * given SCENERY.
+	 * @param int selection: Selection index from the gravity combobox.
+	 *   May be <0 for a random selection.
+	 * @return the scenery setting appropriate for the selection in the gravity
+	 * cobobox.*/
+	E_SCENERY get_scenery_by_selection(int);
+
 	/** Properly starts a new game using the given game pointer.
 	 * Tool function for ok_setup_*() and the constructor. Also
 	 * sets up some signal-slot connections concerning the new object. */

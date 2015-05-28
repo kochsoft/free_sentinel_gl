@@ -19,6 +19,7 @@
 #include <cmath>
 #include <QSurfaceFormat>
 #include <QOpenGLShader>
+#include <QFileInfo>
 #include "widget_openGl.h"
 #include "config.h"
 
@@ -49,13 +50,16 @@ void Widget_OpenGl::display_pause_game()
 }
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_connection()
-	{ return objects.at("sq_connection"); }
+	{ return objects.at(get_scenery_resource_string("sq_connection",scenery)); }
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_odd()
-	{ return objects.at("sq_odd"); }
+	{ return objects.at(get_scenery_resource_string("sq_odd",scenery)); }
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_even()
-	{ return objects.at("sq_even"); }
+	{ return objects.at(get_scenery_resource_string("sq_even",scenery)); }
+
+Mesh_Data* Widget_OpenGl::get_mesh_data_tree()
+	{ return objects.at(get_scenery_resource_string("tree",scenery)); }
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_sentinel()
 	{ return objects.at("sentinel"); }
@@ -65,9 +69,6 @@ Mesh_Data* Widget_OpenGl::get_mesh_data_sentinel_tower()
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_sentry()
 	{ return objects.at("sentry"); }
-
-Mesh_Data* Widget_OpenGl::get_mesh_data_tree()
-	{ return objects.at("tree"); }
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_robot()
 	{ return objects.at("robot"); }
@@ -89,6 +90,7 @@ Widget_OpenGl::Widget_OpenGl(QWidget* parent, Qt::WindowFlags flags)
 	this->do_repaint = true;
 	this->timer_framerate = 0;
 	this->framerate = DEFAULT_FRAMERATE;
+	this->scenery = E_SCENERY::EUROPE;
 	// https://www.opengl.org/archives/resources/faq/technical/depthbuffer.htm
 	// First step for depth testing. Also need glEnable(GL_DEPTH_TEST),
 	// zNear and zFar clipping planes, and GL_DEPTH_BUFFER_BIT sent to glClear(..).
@@ -259,6 +261,8 @@ bool Widget_OpenGl::load_textures()
 	{
 		string key = CI->first;
 		string pfname = CI->second;
+		QFileInfo checkFile(QString(pfname.c_str()));
+		if (!(checkFile.exists() && checkFile.isFile())) throw "Texture file not found.";
 		QImage image(pfname.c_str());
 		if (key.substr(0,2).compare("v_")==0) image = image.mirrored(false,true);
 		if (key.substr(0,2).compare("h_")==0) image = image.mirrored(true,false);
@@ -278,6 +282,8 @@ bool Widget_OpenGl::load_textures()
 Mesh_Data* Widget_OpenGl::build_standard_object(string pfname_obj, string program_name,
 		QOpenGLTexture* texture, bool do_transfer_to_GPU)
 {
+	QFileInfo checkFile(QString(pfname_obj.c_str()));
+	if (!(checkFile.exists() && checkFile.isFile())) throw ".obj file not found.";
 	stringstream ss;
 	io->get_stringstream_from_QFile(pfname_obj,ss);
 	Mesh_Data* object = new Mesh_Data(io);
@@ -285,8 +291,9 @@ Mesh_Data* Widget_OpenGl::build_standard_object(string pfname_obj, string progra
 	{
 		ostringstream oss;
 		oss << "Failure to parse '" << pfname_obj.c_str() << ".";
-		if (io) io->println(E_DEBUG_LEVEL::WARNING, "build_standard_object(..)",
+		if (io) io->println(E_DEBUG_LEVEL::ERROR, "build_standard_object(..)",
 			oss.str().c_str());
+		throw oss.str().c_str();
 		return 0;
 	}
 	object->draw_mode = GL_TRIANGLES;
@@ -296,32 +303,81 @@ Mesh_Data* Widget_OpenGl::build_standard_object(string pfname_obj, string progra
 	return object;
 }
 
+Known_Texture_Resources::Known_Texture_Resources()
+{
+	// Note: Start the name with "v_" for vertical mirroring
+	// and with "h_" for horizontal mirroring.
+	string scrs;
+	All_Sceneries scs;
+	for (vector<E_SCENERY>::const_iterator CI=scs.get_sceneries()->begin();
+		CI!=scs.get_sceneries()->end();CI++)
+	{
+	E_SCENERY sc = *CI;
+	scrs = Widget_OpenGl::get_scenery_resource_string("sky",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
+
+	scrs = Widget_OpenGl::get_scenery_resource_string("foundation",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
+
+	scrs = Widget_OpenGl::get_scenery_resource_string("sq_connection",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
+
+	scrs = Widget_OpenGl::get_scenery_resource_string("sq_odd",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
+
+	scrs = Widget_OpenGl::get_scenery_resource_string("sq_even",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
+
+	scrs = Widget_OpenGl::get_scenery_resource_string("tree",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
+	}
+	textures["sentinel_tower"] = ":/graphics/sentinel_tower.png";
+	textures["sentinel"] = ":/graphics/sentinel.png";
+	textures["sentry"] = ":/graphics/sentry.png";
+	textures["robot"] = ":/graphics/robot.png";
+	textures["meanie"] = ":/graphics/meanie.png";
+	textures["block"] = ":/graphics/block.png";
+}
+
 bool Widget_OpenGl::initialize_objects()
 {
+	All_Sceneries scs;
+	for (vector<E_SCENERY>::const_iterator CI=scs.get_sceneries()->begin();
+		CI!=scs.get_sceneries()->end();CI++)
+	{
+	string scrs;
+	E_SCENERY sc = *CI;
 	//>> The Sky Dome. -----------------------------------------------
-	objects["sky"] = build_standard_object(":/blender/sky_dome.obj",
-		"sky", textures.at("sky_europe"), true);
+	scrs = get_scenery_resource_string("sky",sc);
+	objects[scrs] = build_standard_object(
+		":/blender/sky_dome.obj", "sky", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
 	//>> The foundation plane of the thunder dome. -------------------
-	objects["foundation"] = build_standard_object(":/blender/plane.obj",
-		"terrain", textures.at("foundation_europe"), true);
+	scrs = get_scenery_resource_string("foundation",sc);
+	objects[scrs] = build_standard_object(
+		":/blender/plane.obj", "terrain", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
 	//>> A granite rock wall. ----------------------------------------
-	objects["sq_connection"] = build_standard_object(":/blender/plane.obj",
-		"terrain", textures.at("sq_connection_europe"), true);
+	scrs = get_scenery_resource_string("sq_connection",sc);
+	objects[scrs] = build_standard_object(
+		":/blender/plane.obj", "terrain", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
 	//>> A light square. ---------------------------------------------
-	objects["sq_odd"] = build_standard_object(":/blender/plane.obj",
-		"terrain", textures.at("sq_odd_europe"), true);
+	scrs = get_scenery_resource_string("sq_odd",sc);
+	objects[scrs] = build_standard_object(
+		":/blender/plane.obj", "terrain", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
 	//>> A dark square. ----------------------------------------------
-	objects["sq_even"] = build_standard_object(":/blender/plane.obj",
-		"terrain", textures.at("sq_even_europe"), true);
+	scrs = get_scenery_resource_string("sq_even",sc);
+	objects[scrs] = build_standard_object(
+		":/blender/plane.obj", "terrain", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
 	//>> Tree. -------------------------------------------------------
-	objects["tree"] = build_standard_object(":/blender/tree.obj",
-		"terrain", textures.at("tree"), true);
+	scrs = get_scenery_resource_string("tree",sc);
+	objects[scrs] = build_standard_object(
+		":/blender/"+scrs+".obj", "terrain", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
+	}
 	//>> Block. ------------------------------------------------------
 	objects["block"] = build_standard_object(":/blender/block.obj",
 		"terrain", textures.at("block"), true);
@@ -347,6 +403,22 @@ bool Widget_OpenGl::initialize_objects()
 		"terrain", textures.at("sentinel"), true);
 	//<< -------------------------------------------------------------
 	return true;
+}
+
+string Widget_OpenGl::get_scenery_resource_string(string prefix, E_SCENERY scenery, string suffix)
+{
+	string planet;
+	switch (scenery)
+	{
+		case MASTER: planet = "master"; break;
+		case EUROPE: planet = "europe"; break;
+		case SELENE: planet = "selene"; break;
+		case MARS: planet = "mars"; break;
+		case ASTEROID: planet = "asteroid"; break;
+		default: planet = "europe"; break;
+	}
+	if (prefix.size() > 0) { prefix += "_"; }
+	return prefix + planet + suffix;
 }
 
 void Widget_OpenGl::set_context_to_default_state()
@@ -554,7 +626,7 @@ void Widget_OpenGl::draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera, Q
 void Widget_OpenGl::draw_dome(QMatrix4x4& camera, float fade)
 {
 	//> Draw the sky dome itself. ------------------------------------
-	Mesh_Data* sky = objects.at("sky");
+	Mesh_Data* sky = objects.at(get_scenery_resource_string("sky", scenery));
 	sky->bind();
     // Offset for position of each data type within Vertex_Data.
 	QOpenGLShaderProgram* program = programs.at(sky->program_name);
@@ -630,10 +702,14 @@ void Widget_OpenGl::draw_dome(QMatrix4x4& camera, float fade)
 	//< --------------------------------------------------------------
 	//> Draw the base of the thunderdome. ----------------------------
 	A.setToIdentity(); A.translate(0,0,-.01); A.scale(radius*2);
-	draw_terrain_object(objects.at("foundation"), camera, A, fade);
+	draw_terrain_object(objects.at(
+		get_scenery_resource_string("foundation", scenery)),
+		camera,
+		A,
+		fade
+	);
 	//< --------------------------------------------------------------
 }
-
 					
 float Widget_OpenGl::get_appropriate_scale(Figure* figure)
 {

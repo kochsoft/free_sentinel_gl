@@ -123,6 +123,8 @@ Game* Form_main::new_game_object(E_GAME_TYPE type, uint seed, Setup_game_data* g
 	if (!game_data) game_data = dialog_setup_game->get_game_data();
 	if (!game_data) throw "No non-0 game data available.";
 	if (!game_data->is_valid()) throw "Invalid game data was passed!";
+	uiMainWindow->openGLWidget->set_scenery(
+		get_scenery_by_selection(game_data->combobox_gravity));
 	Game* game = new Game(
 		type,
 		seed,
@@ -239,6 +241,33 @@ uint Form_main::get_timestamp()
 	time_t timer;
 	time(&timer);
 	return (uint)timer;
+}
+
+E_SCENERY Form_main::get_scenery_by_selection(int index)
+{
+	All_Sceneries scs;
+	if (index < 0)
+	{
+		int n = scs.get_sceneries()->size();
+		return ((E_SCENERY)(qrand() % n));
+	} else {
+		string key = planetary_order.at(index);
+		map<string,string> sceneries = Io_Qt::parse_by_subkey(planetary_data, "SCENERY");
+		string sc = sceneries.at(key);
+		E_SCENERY res = E_SCENERY::EUROPE;
+		if (sc.compare("MASTER")==0) res = E_SCENERY::MASTER;
+		else if (sc.compare("EUROPE")==0) res = E_SCENERY::EUROPE;
+		else if (sc.compare("SELENE")==0) res = E_SCENERY::SELENE;
+		else if (sc.compare("MARS")==0) res = E_SCENERY::MARS;
+		else if (sc.compare("ASTEROID")==0) res = E_SCENERY::ASTEROID;
+		if (!scs.is_supported(res))
+		{
+			io.println(E_DEBUG_LEVEL::WARNING, "Form_main::get_scenery_by_selection(int index)",
+				"Given scenery code '"+sc+"' is unsupported so far. Reverting to EUROPE.");
+			res = E_SCENERY::EUROPE;
+		}
+		return res;
+	}
 }
 
 void Form_main::plugin_new_game(Game* game)

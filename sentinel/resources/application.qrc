@@ -6,11 +6,11 @@
     <file>graphics/tree_icon.png</file>
     <file>graphics/big_icon.png</file>
     <file>graphics/sky_europe.png</file>
-    <file>graphics/dome_foundation_europe.png</file>
-    <file>graphics/connection_europe.png</file>
-    <file>graphics/square_light_europe.png</file>
-    <file>graphics/square_dark_europe.png</file>
-    <file>graphics/tree.png</file>
+    <file>graphics/foundation_europe.png</file>
+    <file>graphics/sq_connection_europe.png</file>
+    <file>graphics/sq_odd_europe.png</file>
+    <file>graphics/sq_even_europe.png</file>
+    <file>graphics/tree_europe.png</file>
     <file>graphics/sentinel_tower.png</file>
     <file>graphics/sentinel.png</file>
     <file>graphics/sentry.png</file>
@@ -20,7 +20,7 @@
     <file>graphics/eye.png</file>
     <file>blender/sky_dome.obj</file>
     <file>blender/plane.obj</file>
-    <file>blender/tree.obj</file>
+    <file>blender/tree_europe.obj</file>
     <file>blender/block.obj</file>
     <file>blender/sentinel_tower.obj</file>
     <file>blender/sentry.obj</file>
