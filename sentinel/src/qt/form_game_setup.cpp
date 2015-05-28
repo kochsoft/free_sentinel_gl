@@ -186,13 +186,13 @@ void Dialog_setup_game::onClick_custom()
 void Dialog_setup_game::onClick_cancel()
 {
 	last_close_setup_game_data->write_onto_src();
-	this->reject();
+	this->accept();
 }
 
 void Dialog_setup_game::onClick_close()
 {
 	last_close_setup_game_data->doSnapshot();
-	this->reject();
+	this->accept();
 }
 
 void Dialog_setup_game::onClick_restore_defaults()

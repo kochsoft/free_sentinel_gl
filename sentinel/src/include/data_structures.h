@@ -78,7 +78,7 @@ public:
 //		sceneries.push_back(E_SCENERY::MASTER); // TODO: Decomment these lines when ready.
 		sceneries.push_back(E_SCENERY::EUROPE);
 //		sceneries.push_back(E_SCENERY::SELENE);
-//		sceneries.push_back(E_SCENERY::MARS);
+		sceneries.push_back(E_SCENERY::MARS);
 //		sceneries.push_back(E_SCENERY::ASTEROID);
 	}
 };

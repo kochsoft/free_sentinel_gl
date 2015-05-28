@@ -61,11 +61,11 @@ Mesh_Data* Widget_OpenGl::get_mesh_data_even()
 Mesh_Data* Widget_OpenGl::get_mesh_data_tree()
 	{ return objects.at(get_scenery_resource_string("tree",scenery)); }
 
+Mesh_Data* Widget_OpenGl::get_mesh_data_sentinel_tower()
+	{ return objects.at(get_scenery_resource_string("tower",scenery)); }
+	
 Mesh_Data* Widget_OpenGl::get_mesh_data_sentinel()
 	{ return objects.at("sentinel"); }
-
-Mesh_Data* Widget_OpenGl::get_mesh_data_sentinel_tower()
-	{ return objects.at("sentinel_tower"); }
 
 Mesh_Data* Widget_OpenGl::get_mesh_data_sentry()
 	{ return objects.at("sentry"); }
@@ -330,8 +330,10 @@ Known_Texture_Resources::Known_Texture_Resources()
 
 	scrs = Widget_OpenGl::get_scenery_resource_string("tree",sc);
 	textures[scrs] = ":/graphics/" + scrs + ".png";
+
+	scrs = Widget_OpenGl::get_scenery_resource_string("tower",sc);
+	textures[scrs] = ":/graphics/" + scrs + ".png";
 	}
-	textures["sentinel_tower"] = ":/graphics/sentinel_tower.png";
 	textures["sentinel"] = ":/graphics/sentinel.png";
 	textures["sentry"] = ":/graphics/sentry.png";
 	textures["robot"] = ":/graphics/robot.png";
@@ -377,14 +379,15 @@ bool Widget_OpenGl::initialize_objects()
 	objects[scrs] = build_standard_object(
 		":/blender/"+scrs+".obj", "terrain", textures.at(scrs), true);
 	//<< -------------------------------------------------------------
+	//>> Sentinel Tower. ---------------------------------------------
+	scrs = get_scenery_resource_string("tower",sc);
+	objects[scrs] = build_standard_object(":/blender/tower.obj",
+		"terrain", textures.at(scrs), true);
+	//<< -------------------------------------------------------------
 	}
 	//>> Block. ------------------------------------------------------
 	objects["block"] = build_standard_object(":/blender/block.obj",
 		"terrain", textures.at("block"), true);
-	//<< -------------------------------------------------------------
-	//>> Sentinel Tower. ---------------------------------------------
-	objects["sentinel_tower"] = build_standard_object(":/blender/sentinel_tower.obj",
-		"terrain", textures.at("sentinel_tower"), true);
 	//<< -------------------------------------------------------------
 	//>> Robot. ------------------------------------------------------
 	objects["robot"] = build_standard_object(":/blender/robot.obj",

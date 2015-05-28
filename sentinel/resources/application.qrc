@@ -10,8 +10,17 @@
     <file>graphics/sq_connection_europe.png</file>
     <file>graphics/sq_odd_europe.png</file>
     <file>graphics/sq_even_europe.png</file>
+    <file>graphics/tower_europe.png</file>
     <file>graphics/tree_europe.png</file>
-    <file>graphics/sentinel_tower.png</file>
+    <file>blender/tree_europe.obj</file>
+    <file>graphics/sky_mars.png</file>
+    <file>graphics/foundation_mars.png</file>
+    <file>graphics/sq_connection_mars.png</file>
+    <file>graphics/sq_odd_mars.png</file>
+    <file>graphics/sq_even_mars.png</file>
+    <file>graphics/tower_mars.png</file>
+    <file>graphics/tree_mars.png</file>
+    <file>blender/tree_mars.obj</file>
     <file>graphics/sentinel.png</file>
     <file>graphics/sentry.png</file>
     <file>graphics/robot.png</file>
@@ -20,9 +29,8 @@
     <file>graphics/eye.png</file>
     <file>blender/sky_dome.obj</file>
     <file>blender/plane.obj</file>
-    <file>blender/tree_europe.obj</file>
     <file>blender/block.obj</file>
-    <file>blender/sentinel_tower.obj</file>
+    <file>blender/tower.obj</file>
     <file>blender/sentry.obj</file>
     <file>blender/sentinel.obj</file>
     <file>blender/robot.obj</file>
