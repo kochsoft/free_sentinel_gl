@@ -123,8 +123,8 @@ Game* Form_main::new_game_object(E_GAME_TYPE type, uint seed, Setup_game_data* g
 	if (!game_data) game_data = dialog_setup_game->get_game_data();
 	if (!game_data) throw "No non-0 game data available.";
 	if (!game_data->is_valid()) throw "Invalid game data was passed!";
-	uiMainWindow->openGLWidget->set_scenery(
-		get_scenery_by_selection(game_data->combobox_gravity));
+	uiMainWindow->openGLWidget->set_scenery(get_scenery_by_selection(
+		game_data->checkBox_random_scenery ? -1 : game_data->combobox_gravity));
 	Game* game = new Game(
 		type,
 		seed,
@@ -245,29 +245,33 @@ uint Form_main::get_timestamp()
 
 E_SCENERY Form_main::get_scenery_by_selection(int index)
 {
-	All_Sceneries scs;
+	string sc;
+	Known_Sceneries scs;
+	E_SCENERY res = E_SCENERY::EUROPE;
 	if (index < 0)
 	{
-		int n = scs.get_sceneries()->size();
-		return ((E_SCENERY)(qrand() % n));
+		index = qrand() % Known_Sceneries::number_of_known_sceneries();
+		res = static_cast<E_SCENERY>(index);
+		ostringstream oss;
+		oss << "rnd code " << res;
+		sc = oss.str();
 	} else {
 		string key = planetary_order.at(index);
 		map<string,string> sceneries = Io_Qt::parse_by_subkey(planetary_data, "SCENERY");
-		string sc = sceneries.at(key);
-		E_SCENERY res = E_SCENERY::EUROPE;
+		sc = sceneries.at(key);
 		if (sc.compare("MASTER")==0) res = E_SCENERY::MASTER;
 		else if (sc.compare("EUROPE")==0) res = E_SCENERY::EUROPE;
 		else if (sc.compare("SELENE")==0) res = E_SCENERY::SELENE;
 		else if (sc.compare("MARS")==0) res = E_SCENERY::MARS;
 		else if (sc.compare("ASTEROID")==0) res = E_SCENERY::ASTEROID;
-		if (!scs.is_supported(res))
-		{
-			io.println(E_DEBUG_LEVEL::WARNING, "Form_main::get_scenery_by_selection(int index)",
-				"Given scenery code '"+sc+"' is unsupported so far. Reverting to EUROPE.");
-			res = E_SCENERY::EUROPE;
-		}
-		return res;
 	}
+	if (!scs.is_supported(res))
+	{
+		io.println(E_DEBUG_LEVEL::WARNING, "Form_main::get_scenery_by_selection(int index)",
+			"Given scenery code '"+sc+"' is unsupported so far. Reverting to EUROPE.");
+		res = E_SCENERY::EUROPE;
+	}
+	return res;
 }
 
 void Form_main::plugin_new_game(Game* game)
@@ -299,7 +303,14 @@ void Form_main::restart_game(uint seed)
 
 void Form_main::similar_game()
 {
-	restart_game(get_timestamp());
+	Game* old_game = uiMainWindow->openGLWidget->get_game();
+	if (old_game)
+	{
+		// In case of a CAMPAIGN a similar level should be equivalent to restarting.
+		uint seed = (old_game->get_game_type() == E_GAME_TYPE::CAMPAIGN) ? 
+			old_game->get_landscape()->get_seed() : get_timestamp();
+		restart_game(seed);
+	}
 }
 
 void Form_main::ok_setup_campaign()

@@ -308,7 +308,7 @@ Known_Texture_Resources::Known_Texture_Resources()
 	// Note: Start the name with "v_" for vertical mirroring
 	// and with "h_" for horizontal mirroring.
 	string scrs;
-	All_Sceneries scs;
+	Known_Sceneries scs;
 	for (vector<E_SCENERY>::const_iterator CI=scs.get_sceneries()->begin();
 		CI!=scs.get_sceneries()->end();CI++)
 	{
@@ -341,7 +341,7 @@ Known_Texture_Resources::Known_Texture_Resources()
 
 bool Widget_OpenGl::initialize_objects()
 {
-	All_Sceneries scs;
+	Known_Sceneries scs;
 	for (vector<E_SCENERY>::const_iterator CI=scs.get_sceneries()->begin();
 		CI!=scs.get_sceneries()->end();CI++)
 	{

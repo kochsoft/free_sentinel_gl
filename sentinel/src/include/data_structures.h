@@ -51,11 +51,14 @@ using namespace mhk_gl;
 
 namespace display
 {
+/** If you ever change this enum pls also update
+ * All_Sceneries::number_of_known_sceneries().
+ * TODO: Is there really no better way to determine the size of an enum? */
 enum E_SCENERY { MASTER, EUROPE, SELENE, MARS, ASTEROID };
 enum E_VISIBILITY { HIDDEN, PARTIAL, FULL };
 
 /** Helper to iterate over all possible sceneries. */
-class All_Sceneries
+class Known_Sceneries
 {
 private:
 	vector<E_SCENERY> sceneries;
@@ -65,8 +68,10 @@ public:
 	vector<E_SCENERY>* get_sceneries() { return &(this->sceneries); }
 	/** @return true if and only if the given scenery may be found in this->sceneries. */
 	bool is_supported(E_SCENERY scenery);
+	/** @return the size E_SCENERY in elements. */
+	static int number_of_known_sceneries() { return 5; }
 	/** Standard constructor adding all supported sceneries to this->sceneries. */
-	All_Sceneries()
+	Known_Sceneries()
 	{
 //		sceneries.push_back(E_SCENERY::MASTER); // TODO: Decomment these lines when ready.
 		sceneries.push_back(E_SCENERY::EUROPE);

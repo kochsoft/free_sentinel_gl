@@ -35,8 +35,8 @@ using std::ostringstream;
 
 namespace display
 {
-//> All_Sceneries. ---------------------------------------------------
-bool All_Sceneries::is_supported(E_SCENERY scenery)
+//> Known_Sceneries. -------------------------------------------------
+bool Known_Sceneries::is_supported(E_SCENERY scenery)
 {
 	bool found_it = false;
 	for (vector<E_SCENERY>::const_iterator CI=sceneries.begin();CI!=sceneries.end();CI++)
