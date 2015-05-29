@@ -21,6 +21,14 @@
     <file>graphics/tower_europe.png</file>
     <file>graphics/tree_europe.png</file>
     <file>blender/tree_europe.obj</file>
+    <file>graphics/sky_selene.png</file>
+    <file>graphics/foundation_selene.png</file>
+    <file>graphics/sq_connection_selene.png</file>
+    <file>graphics/sq_odd_selene.png</file>
+    <file>graphics/sq_even_selene.png</file>
+    <file>graphics/tower_selene.png</file>
+    <file>graphics/tree_selene.png</file>
+    <file>blender/tree_selene.obj</file>
     <file>graphics/sky_mars.png</file>
     <file>graphics/foundation_mars.png</file>
     <file>graphics/sq_connection_mars.png</file>
@@ -29,6 +37,14 @@
     <file>graphics/tower_mars.png</file>
     <file>graphics/tree_mars.png</file>
     <file>blender/tree_mars.obj</file>
+    <file>graphics/sky_asteroid.png</file>
+    <file>graphics/foundation_asteroid.png</file>
+    <file>graphics/sq_connection_asteroid.png</file>
+    <file>graphics/sq_odd_asteroid.png</file>
+    <file>graphics/sq_even_asteroid.png</file>
+    <file>graphics/tower_asteroid.png</file>
+    <file>graphics/tree_asteroid.png</file>
+    <file>blender/tree_asteroid.obj</file>
     <file>graphics/sentinel.png</file>
     <file>graphics/sentry.png</file>
     <file>graphics/robot.png</file>

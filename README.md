@@ -61,6 +61,16 @@ as befits your own system.
 </li>
 <li>The dome image of the mars scenery is based on a picture taken by the Pathfinder in 1999 as depicted in Wikipedia: <a href="http://en.wikipedia.org/wiki/Extraterrestrial_skies">http://en.wikipedia.org/wiki/Extraterrestrial_skies</a>. The original of the icon hidden on that scene may be found <a href="http://en.wikipedia.org/wiki/Curiosity_%28rover%29">here</a>.
 </li>
+<li>The sky above the moon scenery, too, is based on a picture I found on Wikipedia:
+<a href="http://en.wikipedia.org/wiki/Extraterrestrial_skies">http://en.wikipedia.org/wiki/Extraterrestrial_skies</a>. The pciture originally was taken by Apollo 8 on December 24th 1968.
+Also I credit A.C. Clarke for the inspiration to a 'moon tree'
+bearing the most simplistic texture ever :-)</li>
+<li>For the asteroidical scenery Wikipedia was still absolutely indispensible.
+First the horizon is a section
+of P67 <a href="http://en.wikipedia.org/wiki/67P/Churyumov%E2%80%93Gerasimenko">http://en.wikipedia.org/wiki/67P/Churyumov%E2%80%93Gerasimenko</a> as photographed by Rosetta in September 2014. Second the hidden icon in the background is the artistic picture on <a href="http://en.wikipedia.org/wiki/Rosetta_%28spacecraft%29">http://en.wikipedia.org/wiki/Rosetta_%28spacecraft%29</a> or more precisely
+on <a href="https://www.flickr.com/photos/europeanspaceagency/11206647984/">https://www.flickr.com/photos/europeanspaceagency/11206647984/</a>. There they state anonymously: 'Credit: ESA/ATG medialab'.
+The stellar background is a depiction of the horsehead nebula: <a href="http://en.wikipedia.org/wiki/Horsehead_Nebula">http://en.wikipedia.org/wiki/Horsehead_Nebula</a>.
+</li>
 <li>My general gratitude goes to the people who seemingly enjoy answering noob questions on the <a href="stackoverflow.com">stackoverflow.com</a> forum. There were some times I would have been seriously stuck without their help.</li>
 </ul>
 </p>
