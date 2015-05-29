@@ -788,7 +788,7 @@ void Widget_OpenGl::draw_landscape(float fade)
 }
 
 void Widget_OpenGl::setup_light_source(QVector4D light_color,
-	QVector3D light_position, float light_ambience)
+	float light_ambience, QVector3D light_position)
 {
 	this->light_position = light_position;
 	this->light_color = light_color;

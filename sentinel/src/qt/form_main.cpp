@@ -126,7 +126,10 @@ Game* Form_main::new_game_object(E_GAME_TYPE type, uint seed, Setup_game_data* g
 	E_SCENERY scenery = get_scenery_by_selection(
 		game_data->checkBox_random_scenery ? -1 : game_data->combobox_gravity);
 	uiMainWindow->openGLWidget->set_scenery(scenery);
-	uiMainWindow->openGLWidget->set_scenery_light(get_light_color_by_scenery(scenery));
+	uiMainWindow->openGLWidget->setup_light_source(
+		get_light_color_by_scenery(scenery),
+		get_light_diffusity_by_scenery(scenery)
+	);
 	Game* game = new Game(
 		type,
 		seed,
@@ -284,6 +287,16 @@ QVector4D Form_main::get_light_color_by_scenery(E_SCENERY scenery)
 	float r, g, b, a;
 	iss >> r; iss >> g; iss >> b; iss >> a;
 	return QVector4D(r,g,b,a);
+}
+
+float Form_main::get_light_diffusity_by_scenery(E_SCENERY scenery)
+{
+	string key = Known_Sceneries::toString(scenery);
+	map<string,string> light_strs = Io_Qt::parse_by_subkey(planetary_data, "DIFFUSE");
+	istringstream iss(light_strs.at(key));
+	float res;
+	iss >> res;
+	return res;
 }
 
 void Form_main::plugin_new_game(Game* game)

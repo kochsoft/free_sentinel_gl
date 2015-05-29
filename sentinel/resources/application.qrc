@@ -5,6 +5,14 @@
     <file>graphics/block_icon.png</file>
     <file>graphics/tree_icon.png</file>
     <file>graphics/big_icon.png</file>
+    <file>graphics/sky_master.png</file>
+    <file>graphics/foundation_master.png</file>
+    <file>graphics/sq_connection_master.png</file>
+    <file>graphics/sq_odd_master.png</file>
+    <file>graphics/sq_even_master.png</file>
+    <file>graphics/tower_master.png</file>
+    <file>graphics/tree_master.png</file>
+    <file>blender/tree_master.obj</file>
     <file>graphics/sky_europe.png</file>
     <file>graphics/foundation_europe.png</file>
     <file>graphics/sq_connection_europe.png</file>

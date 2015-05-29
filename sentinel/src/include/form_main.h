@@ -116,6 +116,9 @@ private:
 	/** Return the light color as stated within misc/gravity.txt. */
 	QVector4D get_light_color_by_scenery(E_SCENERY);
 
+	/** Return the light diffusity as stated within misc/gravity.txt. */
+	float get_light_diffusity_by_scenery(E_SCENERY);
+	
 	/** Properly starts a new game using the given game pointer.
 	 * Tool function for ok_setup_*() and the constructor. Also
 	 * sets up some signal-slot connections concerning the new object. */

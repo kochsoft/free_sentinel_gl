@@ -196,7 +196,17 @@ public:
 	void set_io(Io_Qt* io) { this->io = io; }
 	void set_game(Game* game) { this->game = game; }
 	void set_scenery(E_SCENERY scenery) { this->scenery = scenery; }
-	void set_scenery_light(QVector4D color) { this->light_color = color; }
+
+	/** Setting up light source, color and rest light ambience.
+	 * @param QVector4D light_color: Dominating light color. Every rendering
+	 *   within this game will be multiplied by this color.
+	 * @param QVector3D light_position: Light position for diffuse lighting.
+	 * @param float light_ambience: Minimum light intensity for surfaces in
+	 *   complete shadow. In [0,1]. */
+	void setup_light_source(QVector4D light_color=QVector4D(1,1,1,1),
+		float light_ambience=DEFAULT_LIGHT_AMBIENCE,
+		QVector3D light_position=QVector3D(-1,-1,1));
+	
 	Game* get_game() { return this->game; }
 	float get_framerate() { return this->framerate; }
 	Mesh_Data* get_mesh_data_connection();
@@ -260,15 +270,6 @@ private:
 	 */
 	bool initialize_objects();
 	
-	/** Setting up light source, color and rest light ambience.
-	 * @param QVector4D light_color: Dominating light color. Every rendering
-	 *   within this game will be multiplied by this color.
-	 * @param QVector3D light_position: Light position for diffuse lighting.
-	 * @param float light_ambience: Minimum light intensity for surfaces in
-	 *   complete shadow. In [0,1]. */
-	void setup_light_source(QVector4D light_color=QVector4D(1,1,1,1),
-		QVector3D light_position=QVector3D(-1,-1,1), float light_ambience=DEFAULT_LIGHT_AMBIENCE);
-
 	/** Applies the content of this->default_display to the context. */
 	void set_context_to_default_state();
 	//< --------------------------------------------------------------

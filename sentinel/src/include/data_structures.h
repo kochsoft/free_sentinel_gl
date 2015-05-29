@@ -75,9 +75,9 @@ public:
 	/** Standard constructor adding all supported sceneries to this->sceneries. */
 	Known_Sceneries()
 	{
-//		sceneries.push_back(E_SCENERY::MASTER); // TODO: Decomment these lines when ready.
+		sceneries.push_back(E_SCENERY::MASTER);
 		sceneries.push_back(E_SCENERY::EUROPE);
-//		sceneries.push_back(E_SCENERY::SELENE);
+//		sceneries.push_back(E_SCENERY::SELENE); // TODO: Decomment these lines when ready.
 		sceneries.push_back(E_SCENERY::MARS);
 //		sceneries.push_back(E_SCENERY::ASTEROID);
 	}
