@@ -71,7 +71,7 @@ of P67 <a href="http://en.wikipedia.org/wiki/67P/Churyumov%E2%80%93Gerasimenko">
 on <a href="https://www.flickr.com/photos/europeanspaceagency/11206647984/">https://www.flickr.com/photos/europeanspaceagency/11206647984/</a>. There they state anonymously: 'Credit: ESA/ATG medialab'.
 The stellar background is a depiction of the horsehead nebula: <a href="http://en.wikipedia.org/wiki/Horsehead_Nebula">http://en.wikipedia.org/wiki/Horsehead_Nebula</a>.
 </li>
-<li>My general gratitude goes to the people who seemingly enjoy answering noob questions on the <a href="stackoverflow.com">stackoverflow.com</a> forum. There were some times I would have been seriously stuck without their help.</li>
+<li>My gratitude also goes to numerous people who seemingly enjoy answering noob questions on the <a href="stackoverflow.com">stackoverflow.com</a> forum. Their competent advice was invaluable for my work on this program.</li>
 </ul>
 </p>
 
