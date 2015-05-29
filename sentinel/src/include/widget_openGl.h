@@ -150,7 +150,7 @@ private:
 	bool do_repaint;
 	// If the game is paused this->timer_framerate will not act.
 	// More precisely: update_after_dt() will skip its action.
-	bool is_paused;
+	bool is_auto_paused;
 	// A strong pause mode requested by the user. Needs to be deactivated by the user.
 	bool is_user_paused;
 	// Active scenery setting.
@@ -177,6 +177,8 @@ private:
 	QVector4D light_filtering_factor;
 	/** What color has the light on this planet without any modifiers? */
 	QVector4D light_color;
+	/** Brightness factor. Defaults to (1,1,1,1). */
+	QVector4D light_brightness;
 	/** How much minimum luminescence will have surfaces not hit by light source? */
 	float light_ambience;
 	/** Pointer to the game object. */
@@ -188,10 +190,13 @@ private:
 	/** Updates the statusBar with a pause message. */	
 	void display_pause_game();
 	
+	/** Is the game paused? true if either pause indicator is true. */
+	bool is_paused();
+	
 	/** Employs this->game in order to update the actual zoom factor by
 	 * given dFOV. Makes sure that player max and min opening are maintained. */
 	void update_zoom(float dFOV);
-	
+
 public:
 	void set_io(Io_Qt* io) { this->io = io; }
 	void set_game(Game* game) { this->game = game; }
@@ -328,6 +333,11 @@ private:
 	 *   it is assumed that the mouse is so very close to the center of the screen
 	 *   that the player wishes not to rotate at all. */
 	void player_dynamic_rotation(float framerate, float center=.15);
+	
+	/** Will mutliply this->light_brightness by the given factor.
+	 * Special case: factor==1.0. In that case light_brightness will be
+	 * reset to (1,1,1,1). */
+	void modify_brightness(float factor=1.0);
 	
 	/** Called by keyPressEvent after 'S' has been pressed.
 	 * Updates the statusBar text such that it describes what the mouse

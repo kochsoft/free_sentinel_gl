@@ -49,6 +49,11 @@ void Widget_OpenGl::display_pause_game()
 	do_repaint = true; update();
 }
 
+bool Widget_OpenGl::is_paused()
+{
+	return (is_user_paused || is_auto_paused);
+}
+
 Mesh_Data* Widget_OpenGl::get_mesh_data_connection()
 	{ return objects.at(get_scenery_resource_string("sq_connection",scenery)); }
 
@@ -85,7 +90,7 @@ Widget_OpenGl::Widget_OpenGl(QWidget* parent, Qt::WindowFlags flags)
 {
 	this->io = 0;
 	this->game = 0;
-	this->is_paused = false;
+	this->is_auto_paused = false;
 	this->is_user_paused = false;
 	this->do_repaint = true;
 	this->timer_framerate = 0;
@@ -537,7 +542,7 @@ void Widget_OpenGl::draw_square(Square* sq, QMatrix4x4& camera, float fade)
 	QMatrix3x3 B = unity.normalMatrix();
 
 	program->setUniformValue(handle_pos_light, light_position);
-	program->setUniformValue(handle_color_light, light_color*light_filtering_factor);
+	program->setUniformValue(handle_color_light, light_color*light_brightness*light_filtering_factor);
 	program->setUniformValue(handle_ambience, light_ambience);
 	program->setUniformValue(handle_fade, fade);
 	program->setUniformValue(handle_A, A);
@@ -606,7 +611,7 @@ void Widget_OpenGl::draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera, Q
 	QMatrix3x3 B = trans_rot_object.normalMatrix();
 
 	program->setUniformValue(handle_pos_light, light_position);
-	program->setUniformValue(handle_color_light, light_color*light_filtering_factor);
+	program->setUniformValue(handle_color_light, light_color*light_brightness*light_filtering_factor);
 	program->setUniformValue(handle_ambience, light_ambience);
 	program->setUniformValue(handle_fade, fade);
 	program->setUniformValue(handle_A, A);
@@ -685,7 +690,7 @@ void Widget_OpenGl::draw_dome(QMatrix4x4& camera, float fade)
 	program->setUniformValue(handle_A, A);
 
 	// Assigning the light color.
-	program->setUniformValue(handle_color_light, light_color*light_filtering_factor);
+	program->setUniformValue(handle_color_light, light_color*light_brightness*light_filtering_factor);
 
 	program->setUniformValue(handle_fade, fade);
 	
@@ -790,6 +795,8 @@ void Widget_OpenGl::draw_landscape(float fade)
 void Widget_OpenGl::setup_light_source(QVector4D light_color,
 	float light_ambience, QVector3D light_position)
 {
+	this->light_filtering_factor = QVector4D(1,1,1,1);
+	this->light_brightness = QVector4D(1,1,1,1);
 	this->light_position = light_position;
 	this->light_color = light_color;
 	this->light_ambience = light_ambience;
@@ -823,7 +830,6 @@ void Widget_OpenGl::initializeGL()
 	}
 	//< --------------------------------------------------------------
 	//> Initializing game content. -----------------------------------
-	light_filtering_factor = QVector4D(1,1,1,1);
 	setup_light_source();
 	initializeGL_ok = compile_programs()   && initializeGL_ok;
 	initializeGL_ok = load_textures()      && initializeGL_ok;
@@ -879,13 +885,17 @@ void Widget_OpenGl::mouseReleaseEvent(QMouseEvent* e)
 	Viewer_Data* vd = game->get_player()->get_viewer_data();
 	Player_Data* pd = game->get_player();
 	E_GAME_STATUS status = game->get_status();
+	bool running = !is_paused();
 	switch (button)
 	{
 		case Qt::MouseButton::LeftButton:
 			if (status==E_GAME_STATUS::SURVEY)
 			{
-				game->end_survey();
-				request_paintGL();
+				if (running)
+				{
+					game->end_survey();
+					request_paintGL();
+				}
 			} else if (status==E_GAME_STATUS::WON) {
 				request_new_game();
 				request_paintGL();
@@ -893,14 +903,20 @@ void Widget_OpenGl::mouseReleaseEvent(QMouseEvent* e)
 				request_restart_game();
 				request_paintGL();
 			} else {
-				pd->switch_cursor_mode();
+				if (running) pd->switch_cursor_mode();
 			}
 			break;
 		case Qt::MouseButton::RightButton:
-			game->do_u_turn();
+			if (running)
+			{
+				game->do_u_turn();
+			}
 			break;
 		case Qt::MouseButton::MiddleButton:
-			vd->set_opening(get_player_data()->get_opening_default());
+			if (running)
+			{
+				vd->set_opening(get_player_data()->get_opening_default());
+			}
 			break;
 		default: break;
 	}
@@ -920,7 +936,7 @@ void Widget_OpenGl::update_zoom(float dFOV)
 
 void Widget_OpenGl::wheelEvent(QWheelEvent* e)
 {
-	if (game && !e->angleDelta().isNull())
+	if ((!is_paused()) && game && !e->angleDelta().isNull())
 	{
 		// +-120, -120: turned towards user.
 		float angle = -(float)(e->angleDelta().y())/60.;
@@ -965,7 +981,7 @@ void Widget_OpenGl::player_dynamic_rotation(float framerate, float center)
 
 void Widget_OpenGl::update_after_dt()
 {
-	if (is_paused || is_user_paused || !game) return;
+	if (is_paused() || !game) return;
 	player_dynamic_rotation(framerate);
 	bool had_progress = game->do_progress(1./((float)framerate));
 	do_repaint = do_repaint || had_progress;
@@ -1000,16 +1016,27 @@ void Widget_OpenGl::set_light_filtering_factor(QVector4D color, int action)
 
 void Widget_OpenGl::focusOutEvent(QFocusEvent* e)
 {
-	is_paused = true;
+	is_auto_paused = true;
 	if (game) game->pause_timers();
 	//display_pause_game();
 }
 
 void Widget_OpenGl::focusInEvent(QFocusEvent* e)
 {
-	is_paused = false;
+	is_auto_paused = false;
 	if (game) game->unpause_timers();
 	//display_pause_game();
+}
+
+void Widget_OpenGl::modify_brightness(float factor)
+{
+	if (factor == 1.0)
+	{
+		light_brightness = QVector4D(1,1,1,1);
+	} else {
+		light_brightness *= factor;
+	}
+	request_paintGL();
 }
 
 // TODO: This is like do_u_turn. Have it disabled in inappropriate game states
@@ -1051,53 +1078,57 @@ void Widget_OpenGl::handle_scan_key(E_POSSIBLE_PLAYER_ACTION action, QPoint boar
 
 void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 {
+	if (!game) { e->ignore(); return; }
 	QPoint board_pos(-1,-1);
 	Figure* figure=0;
 	E_POSSIBLE_PLAYER_ACTION action = game->get_mouse_target(
 		get_Gl_mouse_x(true), get_Gl_mouse_y(true), board_pos, figure);
+	bool running = !is_paused();
 	switch(e->key())
 	{
 		case Qt::Key_Escape: exit_requested(); break;
 		case Qt::Key_A: // Absorb object.
-			if (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
-				action == E_POSSIBLE_PLAYER_ACTION::ABSORPTION)
+			if (running && (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
+				action == E_POSSIBLE_PLAYER_ACTION::ABSORPTION))
 			{
 				game->disintegrate_figure(board_pos,true);
 			}
 			break;
 		case Qt::Key_T: // Manifest tree.
-			if (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
-				action == E_POSSIBLE_PLAYER_ACTION::MANIFESTATION)
+			if (running && (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
+				action == E_POSSIBLE_PLAYER_ACTION::MANIFESTATION))
 			{
 				game->manifest_figure(board_pos,E_FIGURE_TYPE::TREE,true);
 			}
 			break;
 		case Qt::Key_B: // Manifest block.
-			if (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
-				action == E_POSSIBLE_PLAYER_ACTION::MANIFESTATION)
+			if (running && (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
+				action == E_POSSIBLE_PLAYER_ACTION::MANIFESTATION))
 			{
 				game->manifest_figure(board_pos,E_FIGURE_TYPE::BLOCK,true);
 			}
 			break;
 		case Qt::Key_R: // Manifest robot.
-			if (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
-				action == E_POSSIBLE_PLAYER_ACTION::MANIFESTATION)
+			if (running && (action == E_POSSIBLE_PLAYER_ACTION::ABSMANI ||
+				action == E_POSSIBLE_PLAYER_ACTION::MANIFESTATION))
 			{
 				game->manifest_figure(board_pos,E_FIGURE_TYPE::ROBOT,true);
 			}
 			break;
 		case Qt::Key_Q: // Transfer consciousness.
-			if (action == E_POSSIBLE_PLAYER_ACTION::EXCHANGE)
+			if (running && (action == E_POSSIBLE_PLAYER_ACTION::EXCHANGE))
 			{
 				game->transfer(board_pos);
 			}
 			break;
 		case Qt::Key_U: // Attempt u-turn.
+			if (running)
 			{
 				game->do_u_turn();
 			}
 			break;
 		case Qt::Key_H: // Hyperjump.
+			if (running)
 			{
 				if (game->hyperspace_request())
 				{
@@ -1106,6 +1137,7 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 			}
 			break;
 		case Qt::Key_Space: // Toggle cursor mode.
+			if (running)
 			{
 				game->get_player()->switch_cursor_mode();
 			}
@@ -1139,22 +1171,41 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 			}
 			break;
 		case Qt::Key_Plus: // Zoom in.
+			if (running)
 			{
 				update_zoom(-DEFAULT_DELTA_ZOOM);
 			}
 			break;
 		case Qt::Key_Minus: // Zoom out.
+			if (running)
 			{
 				update_zoom(DEFAULT_DELTA_ZOOM);
 			}
 			break;
 		case Qt::Key_Period: // Normalize zoom.
+			if (running)
 			{
 				game->get_player()->get_viewer_data()->
 					set_opening(get_player_data()->get_opening_default());
 				request_paintGL();
 			}
 			break;
+		case Qt::Key_1: // Darken image.
+			{
+				modify_brightness(0.95);
+			}
+			break;
+		case Qt::Key_2: // Reset image brightness.
+			{
+				modify_brightness();
+			}
+			break;
+		case Qt::Key_3: // Brighten image.
+			{
+				modify_brightness(1./.95);
+			}
+			break;
+		
 		case Qt::Key_W: // Where am I? Yes, debug code. But I like it nonetheless :-)
 			{
 				QPoint pos = game->get_player()->get_site();
