@@ -62,7 +62,7 @@ as befits your own system.
 <li>The dome image of the mars scenery is based on a picture taken by the Pathfinder in 1999 as depicted in Wikipedia: <a href="http://en.wikipedia.org/wiki/Extraterrestrial_skies">http://en.wikipedia.org/wiki/Extraterrestrial_skies</a>. The original of the icon hidden on that scene may be found <a href="http://en.wikipedia.org/wiki/Curiosity_%28rover%29">here</a>.
 </li>
 <li>The sky above the moon scenery, too, is based on a picture I found on Wikipedia:
-<a href="http://en.wikipedia.org/wiki/Extraterrestrial_skies">http://en.wikipedia.org/wiki/Extraterrestrial_skies</a>. The pciture originally was taken by Apollo 8 on December 24th 1968.
+<a href="http://en.wikipedia.org/wiki/Extraterrestrial_skies">http://en.wikipedia.org/wiki/Extraterrestrial_skies</a>. The picture originally was taken by Apollo 8 on December 24th 1968.
 Also I credit A.C. Clarke for the inspiration to a 'moon tree'
 bearing the most simplistic texture ever :-)</li>
 <li>For the asteroidical scenery Wikipedia was still absolutely indispensible.
