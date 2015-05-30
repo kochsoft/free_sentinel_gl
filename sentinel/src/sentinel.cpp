@@ -37,8 +37,8 @@ void gpl_msg()
 	"Copyright (C) 2015 Markus-Hermann Koch, mhk@markuskoch.eu" << endl << endl <<
     "This program comes with ABSOLUTELY NO WARRANTY; This is free software, " << endl <<
     "and you are welcome to redistribute it under certain conditions;" << endl <<
-	"for details " << endl <<
-    "see menu Help->Gnu Public License within the GUI." << endl << endl;
+	"for details see menu Help->Gnu Public License within the GUI." << endl << endl <<
+	"Loading resources ..." << endl;
 }
 
 // Qt init function during the Khet project gratefully copied from:

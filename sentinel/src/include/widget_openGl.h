@@ -258,7 +258,6 @@ private:
 	 * Note: A key starting with "v_" or with "h_" has load_textures
 	 * flipping the texture vertically or horizontally.
 	 * @return true.
-	 * TODO: This function holds a lot of hard-coded strings. Improve this.
 	 */
 	bool load_textures();
 
@@ -268,10 +267,7 @@ private:
 	
 	/** Call after compile_programs and load_textures have run.
 	 * Prepares the 3D objects for the game and fills this->objects.
-	 * @return true if and only if all went well.
-	 * 
-	 * Note: This function holds a lot of hard-coded strings.
-	 * It remains a TODO to improve this some time!
+	 * @return true.
 	 */
 	bool initialize_objects();
 	
@@ -294,24 +290,28 @@ private:
 	/** Retrieve Non-null Viewer_Data pointer from this->game->player. 
 	 * @throws char* if vd cannot be retrieved or is 0. */
 	Viewer_Data* get_viewer_data();
-	
-	// TODO: There is great code redundancy between this fct and draw_terrain_object!
-	// Clean that up sometime.
-	void draw_square(Square* sq, QMatrix4x4& camera, float fade);
-	
-	/** Takes a Mesh_Data pointer and draws it to GL using program "terrain".
-	 * @param Mesh_Data* object: pointer to the target object to be drawn.
-	 * @param QMatrix4x4 camera: combined lookAt*perspective transformation
-	 *   as returned by game->get_player()->get_viewer_data()->get_camera()
-	 * @param QMatrix4x4 trans_rot_object: The Mesh_Data* is assumed to be in
-	 *   object coordinates. This matrix will be applied to the vertex data
-	 *   prior to any other transformation.
-	 * @param ViewerData viewer: ViewerData object containing information
-	 *   about viewer position, camera angle and perspective.
-	 * @param float fade: In [0,1]. Alpha channel factor for fading.
+		
+	/** Draws an object using the terrain shaders.
+	 * @param Mesh_Data* object: Pointer to the mesh data for the object to be drawn.
+	 * @param QMatrix4x4& camera: Final transformation to be applied to
+	 *   the vertices prior to drawing. Consists of (perspective*lookAt).
+	 * @param QMatrix4x4& trans_rot: May be the identity matrix if the target
+	 *   mesh is in world coordinates already. Else (translation*rotation)
+	 *   transformation to be applied prior to the camera transformation.
+	 *   This matrix is also needed for the diffuse lighting algorithm.
+	 * @param float fade: Alpha channel fading factor in [0,1].
+	 * @param QOpenGLBuffer* buf_vertices: If given use these vertices instead
+	 *   of the ones already present in Mesh_Data. This is useful for
+	 *   this->draw_square() with its world coordinate vertex set.
+	 *   May be 0 in order to use the buffer within Mesh_Data.
 	 */
-	void draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera, QMatrix4x4& trans_rot_object, float fade);
-	
+	void draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera,
+		QMatrix4x4& trans_rot_object, float fade, QOpenGLBuffer* buf_vertices=0);
+
+	/** Basically just calls draw_terrain_object using the world coordinate
+	 * vertex buffer within sq. */
+	void draw_square(Square* sq, QMatrix4x4& camera, float fade);
+
 	/** Draws the thunderdome. I.e. the sky and the flat plain beneath it. 
 	 * fade is the value of the alpha channel. */
 	void draw_dome(QMatrix4x4& camera, float fade);

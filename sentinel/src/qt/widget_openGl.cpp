@@ -31,20 +31,24 @@ namespace display
 {
 Display_Data Widget_OpenGl::default_display = Display_Data();
 
+
+//namespace { QVector4D old_light_filtering_factor(1,1,1,1); }
 void Widget_OpenGl::display_pause_game()
 {
 	QVector4D light_pause(.9,.8,1.3,1);
 	if (is_user_paused)
 	{
 		update_parent_statusBar_text(tr("Chronometer stopped by the synthoid."));
-		set_light_filtering_factor(light_pause,0);
-//	} else if (is_paused) {
-//		update_parent_statusBar_text(tr("Chronometer stopped by The Sentinel."));
-// TODO: inside a pause because of the mouse pointer being outside the window.		
-//		set_light_filtering_factor(light_pause,0);
+		//old_light_filtering_factor = light_filtering_factor;
+		//set_light_filtering_factor(light_pause,0);
+	} else if (is_auto_paused) {
+		update_parent_statusBar_text(tr("Chronometer stopped by The Sentinel."));
+		// TODO! Fix me: I want blue light if and only if the game is paused.
+		//old_light_filtering_factor = light_filtering_factor;
+		//set_light_filtering_factor(light_pause,2);
 	} else {
 		update_parent_statusBar_text(game ? game->get_game_status_string() : "...");
-		set_light_filtering_factor(light_pause,1);
+		//set_light_filtering_factor(light_pause,1);
 	}
 	do_repaint = true; update();
 }
@@ -491,83 +495,12 @@ Viewer_Data* Widget_OpenGl::get_viewer_data()
 	return vd;
 }
 
-void Widget_OpenGl::draw_square(Square* sq, QMatrix4x4& camera, float fade)
+void Widget_OpenGl::draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera,
+	QMatrix4x4& trans_rot_object, float fade, QOpenGLBuffer* buf_vertices)
 {
-	if (sq == 0) throw "0 pointer square encountered!";
-	Mesh_Data* mesh = sq->get_mesh_prototype();
-	mesh->buf_elements.bind();
-	if (mesh->texture) mesh->texture->bind();
-	sq->buf_vertices.bind();
-	QOpenGLShaderProgram* program = programs.at(mesh->program_name);
-	program->bind();
-
-    int handle_v_vertices = program->attributeLocation("v_vertices");
-	int handle_v_normals = program->attributeLocation("v_normals");
-    int handle_v_tex_coords = program->attributeLocation("v_tex_coords");
-	int handle_v_vertex_colors = program->attributeLocation("v_vertex_colors");
-	int handle_pos_light = program->uniformLocation("pos_light");
-	int handle_color_light = program->uniformLocation("color_light");
-	int handle_ambience = program->uniformLocation("ambience");
-	int handle_fade = program->uniformLocation("fade");
-	int handle_A = program->uniformLocation("A");
-	int handle_B = program->uniformLocation("B");
-
-	// Vertices.
-	quintptr offset = 0;
-	program->enableAttributeArray(handle_v_vertices);
-	program->setAttributeBuffer(
-		handle_v_vertices, GL_FLOAT, offset, 4, sizeof(Vertex_Data));
-	
-	// Normal vectors.
-	offset += sizeof(QVector4D);
-	program->enableAttributeArray(handle_v_normals);
-	program->setAttributeBuffer(
-		handle_v_normals, GL_FLOAT, offset, 3, sizeof(Vertex_Data));
-	
-	// Tex coords.
-	offset += sizeof(QVector3D);
-    program->enableAttributeArray(handle_v_tex_coords);
-    program->setAttributeBuffer(
-		handle_v_tex_coords, GL_FLOAT, offset, 2, sizeof(Vertex_Data));
-	
-	// Vertex colors.
-	offset += sizeof(QVector2D);
-	program->enableAttributeArray(handle_v_vertex_colors);
-	program->setAttributeBuffer(
-		handle_v_vertex_colors, GL_FLOAT, offset, 4, sizeof(Vertex_Data));
-	
-	QMatrix4x4 unity;
-	unity.setToIdentity();
-	QMatrix4x4 A = camera * unity;
-	QMatrix3x3 B = unity.normalMatrix();
-
-	program->setUniformValue(handle_pos_light, light_position);
-	program->setUniformValue(handle_color_light, light_color*light_brightness*light_filtering_factor);
-	program->setUniformValue(handle_ambience, light_ambience);
-	program->setUniformValue(handle_fade, fade);
-	program->setUniformValue(handle_A, A);
-	program->setUniformValue(handle_B, B);
-
-    // Draw cube geometry using indices from VBO 1
-    glDrawElements(
-		mesh->draw_mode, // Element ordering. Here probably GL_TRIANGLES.
-		mesh->elements.size(), // #elements withinin the bound index buffer.
-		GL_UNSIGNED_SHORT, 0);
-
-	program->disableAttributeArray(handle_v_vertex_colors);
-	program->disableAttributeArray(handle_v_tex_coords);
-	program->disableAttributeArray(handle_v_normals);
-	program->disableAttributeArray(handle_v_vertices);
-
-	program->release();
-	sq->buf_vertices.release();
-	if (mesh->texture) mesh->texture->release();
-	mesh->buf_elements.release();
-}
-
-void Widget_OpenGl::draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera, QMatrix4x4& trans_rot_object, float fade)
-{
-	object->bind();
+	object->buf_elements.bind();
+	if (object->texture) object->texture->bind();
+	if (buf_vertices) { buf_vertices->bind(); } else { object->buf_vertices.bind(); }
 	QOpenGLShaderProgram* program = programs.at(object->program_name);
 	program->bind();
 	program->setUniformValue("texture", 0);
@@ -628,7 +561,18 @@ void Widget_OpenGl::draw_terrain_object(Mesh_Data* object, QMatrix4x4& camera, Q
 	program->disableAttributeArray(handle_v_normals);
 	program->disableAttributeArray(handle_v_vertices);
 	program->release();
-	object->release();
+
+	if (buf_vertices) { buf_vertices->release(); } else { object->buf_vertices.release(); }
+	if (object->texture) object->texture->release();
+	object->buf_elements.release();
+}
+
+void Widget_OpenGl::draw_square(Square* sq, QMatrix4x4& camera, float fade)
+{
+	if (sq == 0) throw "0 pointer square encountered!";
+	Mesh_Data* mesh = sq->get_mesh_prototype();
+	QMatrix4x4 trans_rot; trans_rot.setToIdentity(); // The mesh is in world coordinates.
+	draw_terrain_object(mesh, camera, trans_rot, fade, &(sq->buf_vertices));
 }
 
 void Widget_OpenGl::draw_dome(QMatrix4x4& camera, float fade)
@@ -840,8 +784,6 @@ void Widget_OpenGl::initializeGL()
 	}
 	//< --------------------------------------------------------------
 	//> Setting up the update timer. ---------------------------------
-	//timer_framerate = new QTimer(this)
-    //connect(timer_framerate, SIGNAL(timeout()), this, SLOT(update_after_dt()));
     timer_framerate->start(1000./framerate);
 	//< --------------------------------------------------------------
 }
@@ -1018,14 +960,14 @@ void Widget_OpenGl::focusOutEvent(QFocusEvent* e)
 {
 	is_auto_paused = true;
 	if (game) game->pause_timers();
-	//display_pause_game();
+	display_pause_game();
 }
 
 void Widget_OpenGl::focusInEvent(QFocusEvent* e)
 {
 	is_auto_paused = false;
 	if (game) game->unpause_timers();
-	//display_pause_game();
+	display_pause_game();
 }
 
 void Widget_OpenGl::modify_brightness(float factor)

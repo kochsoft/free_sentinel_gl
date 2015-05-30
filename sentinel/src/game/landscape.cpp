@@ -418,7 +418,8 @@ void Square::set_altitude(int level, int x, int y)
 	}
 }
 
-void Square::set_sloped_altitudes(float alt_pp, float alt_mp, float alt_mm, float alt_pm, int x, int y)
+void Square::set_sloped_altitudes(float alt_pp, float alt_mp, float alt_mm, float alt_pm,
+	int x, int y)
 {
 	if (alt_pp < 0 || alt_mp <0 || alt_pm < 0 || alt_mm < 0)
 	{
