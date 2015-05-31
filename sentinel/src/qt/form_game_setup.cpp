@@ -143,6 +143,7 @@ Dialog_setup_game::~Dialog_setup_game()
 
 void Dialog_setup_game::onClick_campaign()
 {
+	this->accept();
 	QString text = get_ui()->lineEdit_campaign->text();
 	if (text.size() == 0) text = "0";
 	istringstream iss(text.toStdString());
@@ -165,6 +166,7 @@ void Dialog_setup_game::onClick_campaign()
 
 void Dialog_setup_game::onClick_challenge()
 {
+	this->accept();
 	time_t timer;
 	time(&timer);
 	create_challenge(
@@ -172,27 +174,26 @@ void Dialog_setup_game::onClick_challenge()
 		ui_dialog_setup_game->horizontalSlider_challenge->value()
 	);
 	last_close_setup_game_data->doSnapshot();
-	this->accept();
 	start_challenge();
 }
 
 void Dialog_setup_game::onClick_custom()
 {
-	last_close_setup_game_data->doSnapshot();
 	this->accept();
+	last_close_setup_game_data->doSnapshot();
 	start_custom();
 }
 
 void Dialog_setup_game::onClick_cancel()
 {
-	last_close_setup_game_data->write_onto_src();
 	this->accept();
+	last_close_setup_game_data->write_onto_src();
 }
 
 void Dialog_setup_game::onClick_close()
 {
-	last_close_setup_game_data->doSnapshot();
 	this->accept();
+	last_close_setup_game_data->doSnapshot();
 }
 
 void Dialog_setup_game::onClick_restore_defaults()

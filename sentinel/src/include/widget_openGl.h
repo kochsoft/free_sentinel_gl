@@ -339,11 +339,6 @@ private:
 	 * reset to (1,1,1,1). */
 	void modify_brightness(float factor=1.0);
 	
-	/** Called by keyPressEvent after 'S' has been pressed.
-	 * Updates the statusBar text such that it describes what the mouse
-	 * is pointing at. */
-	void handle_scan_key(E_POSSIBLE_PLAYER_ACTION action, QPoint board_pos, Figure* figure);
-	
 protected:
 	//> Qt event handling functions I have overwritten. --------------
 	/** Called once automatically after the GL context was created. */
@@ -356,8 +351,10 @@ protected:
 	virtual void wheelEvent(QWheelEvent*);
 	virtual void keyPressEvent(QKeyEvent*);
 	
-	virtual void focusOutEvent(QFocusEvent*);
-	virtual void focusInEvent(QFocusEvent*);
+	virtual void enterEvent(QEvent*);
+	virtual void leaveEvent(QEvent*);
+	//virtual void focusOutEvent(QFocusEvent*);
+	//virtual void focusInEvent(QFocusEvent*);
 	//< --------------------------------------------------------------
 
 public slots:

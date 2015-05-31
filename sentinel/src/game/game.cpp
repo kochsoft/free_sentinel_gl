@@ -688,6 +688,47 @@ void Game::set_survey_view_data(float dphi, float dtheta)
 		site, center-site, player->get_viewer_data()->get_opening());
 }
 
+void Game::handle_scan_key(E_POSSIBLE_PLAYER_ACTION action, QPoint board_pos, Figure* figure)
+{
+	ostringstream oss;
+	if (board_pos.x()==-1)
+	{
+		QString empty = tr("No interactable matter detected.");
+		oss << empty.toStdString().c_str();
+	} else {
+		if (figure == 0)
+		{
+			QString hue;
+			if (landscape->get_board_sq()->get(board_pos)->get_type()==E_SQUARE_TYPE::CONNECTION)
+			{
+				hue = "Sloped";
+			} else {
+				hue = ((board_pos.x()+board_pos.y())%2==0) ?
+					tr("Dark") : tr("Light");
+			}
+			oss << hue.toStdString() <<
+				tr(" square detected at coordinates (").toStdString() <<
+				board_pos.x() << "," << board_pos.y() << ").";
+		} else {
+			QString name = figure->get_figure_name();
+			QString task;
+			switch (action)
+			{
+				case E_POSSIBLE_PLAYER_ACTION::ABSMANI: task = tr("Interactible"); break;
+				case E_POSSIBLE_PLAYER_ACTION::ABSORPTION: task = tr("Absorbable"); break;
+				case E_POSSIBLE_PLAYER_ACTION::MANIFESTATION: task = tr("Manifestible"); break;
+				case E_POSSIBLE_PLAYER_ACTION::EXCHANGE: task = tr("Transferable"); break;
+				default: task = tr("Isolated");
+			}
+			QString h = tr(" detected at coordinates (");
+			oss << task.toStdString().c_str() << " " <<
+				name.toStdString().c_str() << h.toStdString().c_str() <<
+				board_pos.x() << "," << board_pos.y() << ").";
+		}
+	}
+	update_statusBar_text(tr(oss.str().c_str()));
+}
+
 void Game::do_u_turn()
 {
 	if (status != E_GAME_STATUS::SURVEY &&

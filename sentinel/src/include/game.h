@@ -339,6 +339,12 @@ public:
 	/** Updates View_Data for survey mode with this angle. */
 	void set_survey_view_data(float dphi, float dtheta);
 	
+	/** Called by keyPressEvent after 'S' has been pressed.
+	 * Updates the statusBar text such that it describes what the mouse
+	 * is pointing at. */
+	void handle_scan_key(E_POSSIBLE_PLAYER_ACTION action, QPoint board_pos, Figure* figure);
+
+	
 	/** Performs a U-turn if not in SURVEY, WON or LOST state. */
 	void do_u_turn();
 	

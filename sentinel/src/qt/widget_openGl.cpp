@@ -31,24 +31,39 @@ namespace display
 {
 Display_Data Widget_OpenGl::default_display = Display_Data();
 
-
-//namespace { QVector4D old_light_filtering_factor(1,1,1,1); }
+namespace {	bool pause_light_active = false; }
 void Widget_OpenGl::display_pause_game()
 {
+	if (!game) return;
 	QVector4D light_pause(.9,.8,1.3,1);
-	if (is_user_paused)
+	ostringstream oss;
+	if (is_user_paused || is_auto_paused)
 	{
-		update_parent_statusBar_text(tr("Chronometer stopped by the synthoid."));
-		//old_light_filtering_factor = light_filtering_factor;
-		//set_light_filtering_factor(light_pause,0);
-	} else if (is_auto_paused) {
-		update_parent_statusBar_text(tr("Chronometer stopped by The Sentinel."));
-		// TODO! Fix me: I want blue light if and only if the game is paused.
-		//old_light_filtering_factor = light_filtering_factor;
-		//set_light_filtering_factor(light_pause,2);
+		oss << "Chronometer halted by the " <<
+			((is_user_paused) ? "synthoid" : "Sentinel") << ".";
+		update_parent_statusBar_text(tr(oss.str().c_str()));
+		if (!pause_light_active)
+		{
+			set_light_filtering_factor(light_pause,0);
+			pause_light_active = true;
+		}
 	} else {
-		update_parent_statusBar_text(game ? game->get_game_status_string() : "...");
-		//set_light_filtering_factor(light_pause,1);
+		update_parent_statusBar_text(game->get_game_status_string());
+		if (pause_light_active)
+		{
+			// This 'if' admittedly is a hack. At the beginning of the game when
+			// the setup window closes the color filter is reset to (1,1,1,1).
+			// Then the game unpauses and we would get false colors
+			// if substracting the light_pause filter.
+			if (light_filtering_factor.x() != 1. || 
+				light_filtering_factor.y() != 1. ||
+				light_filtering_factor.z() != 1. ||
+				light_filtering_factor.w() != 1.)
+			{
+				set_light_filtering_factor(light_pause,1);
+			}
+			pause_light_active = false;
+		}		
 	}
 	do_repaint = true; update();
 }
@@ -109,6 +124,7 @@ Widget_OpenGl::Widget_OpenGl(QWidget* parent, Qt::WindowFlags flags)
 	this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	timer_framerate = new QTimer(this);
     connect(timer_framerate, SIGNAL(timeout()), this, SLOT(update_after_dt()));
+	setMouseTracking(true);
 }
 
 Widget_OpenGl::~Widget_OpenGl()
@@ -231,7 +247,6 @@ bool Widget_OpenGl::compile_programs()
 	//<< -------------------------------------------------------------
 	//>> Compiling the programs. -------------------------------------
 	// Note: It is assumed that every program has a vertex and a fragment shader.
-	// TODO: Possibly generalize this later on.
 	for (map<string,string>::iterator IT=src_vertex.begin();IT!=src_vertex.end();++IT)
 	{
 		string key = IT->first;
@@ -793,10 +808,7 @@ void Widget_OpenGl::resizeGL(int width, int height)
 	do_repaint = true;
 }
 
-// Note: makeCurrent() and doneCurrent() are automatically called
-// when Qt calls paintGL.
-// TODO: Keep double buffering and frame swapping in mind!	//this->context()->swapBuffers();
-// https://doc-snapshots.qt.io/qt5-5.4/qopenglwidget.html
+// Note: makeCurrent() and doneCurrent() are automatically called when Qt calls paintGL.
 void Widget_OpenGl::paintGL()
 {
 	if (!(do_repaint && initializeGL_ok && game)) { return; }
@@ -956,17 +968,17 @@ void Widget_OpenGl::set_light_filtering_factor(QVector4D color, int action)
 	}
 }
 
-void Widget_OpenGl::focusOutEvent(QFocusEvent* e)
-{
-	is_auto_paused = true;
-	if (game) game->pause_timers();
-	display_pause_game();
-}
-
-void Widget_OpenGl::focusInEvent(QFocusEvent* e)
+void Widget_OpenGl::enterEvent(QEvent* e)
 {
 	is_auto_paused = false;
 	if (game) game->unpause_timers();
+	display_pause_game();
+}
+
+void Widget_OpenGl::leaveEvent(QEvent* e)
+{
+	is_auto_paused = true;
+	if (game) game->pause_timers();
 	display_pause_game();
 }
 
@@ -979,43 +991,6 @@ void Widget_OpenGl::modify_brightness(float factor)
 		light_brightness *= factor;
 	}
 	request_paintGL();
-}
-
-// TODO: This is like do_u_turn. Have it disabled in inappropriate game states
-// like the survey mode and move it to Game class.
-void Widget_OpenGl::handle_scan_key(E_POSSIBLE_PLAYER_ACTION action, QPoint board_pos, Figure* figure)
-{
-	ostringstream oss;
-	if (board_pos.x()==-1)
-	{
-		QString empty = tr("No interactable matter detected.");
-		oss << empty.toStdString().c_str();
-	} else {
-		if (figure == 0)
-		{
-			QString hue = ((board_pos.x()+board_pos.y())%2==0) ?
-				tr("Dark or grey") : tr("Light or grey");
-			QString h = tr(" square detected at coordinates (");
-			oss << hue.toStdString().c_str() << h.toStdString().c_str() <<
-				board_pos.x() << "," << board_pos.y() << ").";
-		} else {
-			QString name = figure->get_figure_name();
-			QString task;
-			switch (action)
-			{
-				case E_POSSIBLE_PLAYER_ACTION::ABSMANI: task = tr("Interactible"); break;
-				case E_POSSIBLE_PLAYER_ACTION::ABSORPTION: task = tr("Absorbable"); break;
-				case E_POSSIBLE_PLAYER_ACTION::MANIFESTATION: task = tr("Manifestible"); break;
-				case E_POSSIBLE_PLAYER_ACTION::EXCHANGE: task = tr("Transferable"); break;
-				default: task = tr("Isolated");
-			}
-			QString h = tr(" detected at coordinates (");
-			oss << task.toStdString().c_str() << " " <<
-				name.toStdString().c_str() << h.toStdString().c_str() <<
-				board_pos.x() << "," << board_pos.y() << ").";
-		}
-	}
-	update_parent_statusBar_text(tr(oss.str().c_str()));
 }
 
 void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
@@ -1103,7 +1078,7 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 			break;
 		case Qt::Key_S: // Analyze scanned object.
 			{
-				handle_scan_key(action, board_pos, figure);
+				game->handle_scan_key(action, board_pos, figure);
 			}
 			break;
 		case Qt::Key_F: // Toggle fullscreen mode.
