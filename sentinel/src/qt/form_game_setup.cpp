@@ -143,12 +143,7 @@ Dialog_setup_game::~Dialog_setup_game()
 
 void Dialog_setup_game::onClick_campaign()
 {
-	this->accept();
-	QString text = get_ui()->lineEdit_campaign->text();
-	if (text.size() == 0) text = "0";
-	istringstream iss(text.toStdString());
-	uint code;
-	iss >> code;
+	uint code = get_code_from_form();
 	if (setup_campaign_level(code))
 	{
 		last_close_setup_game_data->doSnapshot();
@@ -169,7 +164,7 @@ void Dialog_setup_game::onClick_challenge()
 	this->accept();
 	time_t timer;
 	time(&timer);
-	create_challenge(
+	setup_challenge(
 		(uint)timer,
 		ui_dialog_setup_game->horizontalSlider_challenge->value()
 	);
@@ -220,6 +215,17 @@ void Dialog_setup_game::populate_combobox_rotation_type()
 	ui_dialog_setup_game->comboBox_rotation_type->setCurrentIndex(2);
 }
 
+void Dialog_setup_game::populate_combobox_age()
+{
+	QStringList list;
+	list.push_back(tr("Ancient"));
+	list.push_back(tr("Aged"));
+	list.push_back(tr("Intermediate"));
+	list.push_back(tr("Young"));
+	ui_dialog_setup_game->comboBox_age->addItems(list);
+	ui_dialog_setup_game->comboBox_age->setCurrentIndex(2);
+}
+
 uint Dialog_setup_game::get_n_gravity_from_form()
 {
 	return (uint)(ui_dialog_setup_game->comboBox_gravity->currentIndex());
@@ -241,7 +247,6 @@ uint Dialog_setup_game::get_n_sentries_from_form()
 uint Dialog_setup_game::get_n_energy_from_form()
 {
 	uint max = (uint)(ui_dialog_setup_game->spinBox_energy->maximum());
-	//uint min = (uint)(ui_dialog_setup_game->spinBox_energy->minimum());
 	uint val = (uint)(ui_dialog_setup_game->spinBox_energy->value());
 	return max-val;
 }
@@ -268,15 +273,45 @@ uint Dialog_setup_game::get_max_n_energy_from_form()
 		ui_dialog_setup_game->spinBox_energy->minimum();
 }
 
-void Dialog_setup_game::populate_combobox_age()
+int Dialog_setup_game::get_level_number(uint code)
 {
-	QStringList list;
-	list.push_back(tr("Ancient"));
-	list.push_back(tr("Aged"));
-	list.push_back(tr("Intermediate"));
-	list.push_back(tr("Young"));
-	ui_dialog_setup_game->comboBox_age->addItems(list);
-	ui_dialog_setup_game->comboBox_age->setCurrentIndex(2);
+	code = code >> 16;
+	return ((int)code);
+}
+
+bool Dialog_setup_game::get_next_campaign_code(int energy_loot, uint& new_code)
+{
+	new_code = get_code_from_form();
+	uint loot = (uint)energy_loot;
+	loot = loot << 16;
+	new_code += loot;
+	int level = get_level_number(new_code);
+	// 'false' shall mean: 'The campaign is won'.
+	return (level <= ui_dialog_setup_game->horizontalSlider_challenge->value());
+}
+
+bool Dialog_setup_game::setup_campaign_level(uint code)
+{
+	if (!is_valid_code(code)) return false;
+	code = code >> 16;
+	this->campaign_seed = code;
+	setup_challenge(code, code);
+	return true;
+}
+
+bool Dialog_setup_game::is_valid_code(uint code)
+{
+	return ((code & 0xffff) % 257 == 0);
+}
+
+uint Dialog_setup_game::get_code_from_form()
+{
+	QString text = get_ui()->lineEdit_campaign->text();
+	if (text.size() == 0) text = "0";
+	istringstream iss(text.toStdString());
+	uint code;
+	iss >> code;
+	return code;
 }
 
 void Dialog_setup_game::put_values_into_form(uint n_gravity, uint n_age,
@@ -294,81 +329,6 @@ void Dialog_setup_game::put_values_into_form(uint n_gravity, uint n_age,
 	last_close_setup_game_data->doSnapshot();
 }
 
-uint Dialog_setup_game::generate_campaign_code(uint n_gravity, uint n_age,
-	uint n_sentries, uint n_energy, uint offset, bool& campaign_won)
-{
-	uint max_offset = DEFAULT_CAMPAIGN_MAX_OFFSET;
-	campaign_won = false;
-	//> Handling offset overflow. ------------------------------------
-	uint delta = 0;
-	if (offset > max_offset)
-	{
-		delta = offset / max_offset;
-		offset = offset % max_offset;
-	}
-	uint max_n_gravity = get_max_n_gravity_from_form();
-	uint max_n_age = get_max_n_age_from_form();
-	uint max_n_sentries = get_max_n_sentries_from_form();
-	uint max_n_energy = get_max_n_energy_from_form();
-	while (delta > 0)
-	{
-		delta--;
-		n_energy++;
-		if (n_energy > max_n_energy)
-		{
-			n_energy = 0;
-			n_sentries++;
-			if (n_sentries > max_n_sentries)
-			{
-				n_sentries = 0;
-				n_age++;
-				if (n_age > max_n_age)
-				{
-					n_age = 0;
-					n_gravity++;
-					if (n_gravity > max_n_gravity)
-					{
-						campaign_won = true;
-						n_gravity = max_n_gravity;
-					}
-				}
-			}
-		}
-	}
-	//< --------------------------------------------------------------
-	//> Generating the actual code. ----------------------------------
-	uint code = n_energy + 16*n_sentries + 256*n_age + 4096*n_gravity;
-	if (sizeof(uint) > 2) { code += 65536*offset; } // 2^16==65536.
-	//< --------------------------------------------------------------
-	return code;
-}
-
-bool Dialog_setup_game::parse_campaign_code(uint code, uint& n_gravity,
-	uint& n_age, uint& n_sentries, uint& n_energy, uint& offset)
-{
-	uint max_offset = DEFAULT_CAMPAIGN_MAX_OFFSET;
-	//> Step 1: Parsing the code. ------------------------------------
-	n_energy   = (code & 0x000f);
-	n_sentries = (code & 0x00f0) / 16;
-	n_age      = (code & 0x0f00) / 256;
-	n_gravity  = (code & 0xf000) / 4096;
-	offset     = code / 65536;
-	//< --------------------------------------------------------------
-	//> Step 2: Checking validity. -----------------------------------
-	uint max_gravity = get_max_n_gravity_from_form();
-	uint max_age = get_max_n_age_from_form();
-	uint max_sentries = get_max_n_sentries_from_form();
-	uint max_energy = get_max_n_energy_from_form();
-	return (
-		offset <= max_offset &&
-		n_energy <= max_energy &&
-		n_sentries <= max_sentries &&
-		n_age <= max_age &&
-		n_gravity <= max_gravity
-	);
-	//< --------------------------------------------------------------
-}
-
 void Dialog_setup_game::harmonize_values(uint& n_gravity,
 	uint& n_age, uint& n_sentries, uint& n_energy)
 {
@@ -377,56 +337,6 @@ void Dialog_setup_game::harmonize_values(uint& n_gravity,
 	if (n_gravity > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)2); }
 	if (n_sentries > 3) { n_age = qMin(n_age, (uint)2); }
 	if (n_sentries > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)2); }
-}
-
-bool Dialog_setup_game::get_next_campaign_code(uint offset, uint& new_code)
-{
-	uint n_gravity = get_n_gravity_from_form();
-	uint n_age = get_n_age_from_form();
-	uint n_sentries = get_n_sentries_from_form();
-	uint n_energy = get_n_energy_from_form();
-	bool campaign_won = false;
-	new_code = generate_campaign_code(n_gravity, n_age, n_sentries, n_energy,
-		offset, campaign_won);
-	return campaign_won;
-}
-
-int Dialog_setup_game::get_level_number(uint code)
-{
-	uint max_offset = DEFAULT_CAMPAIGN_MAX_OFFSET;
-	uint n_gravity;
-	uint n_age;
-	uint n_sentries;
-	uint n_energy;
-	uint offset;
-	bool valid = parse_campaign_code(code, n_gravity, n_age,
-		n_sentries, n_energy, offset);
-	if (!valid) return -1;
-	uint max_age = get_max_n_age_from_form();
-	uint max_sentries = get_max_n_sentries_from_form();
-	uint max_energy = get_max_n_energy_from_form();
-	return
-		(n_gravity * max_age * max_sentries * max_energy +
-		n_age * max_sentries * max_energy +
-		n_sentries * max_energy +
-		n_energy)*max_offset + offset;
-}
-
-bool Dialog_setup_game::setup_campaign_level(uint code)
-{
-	uint n_gravity = 0;
-	uint n_age = 0;
-	uint n_sentries = 0;
-	uint n_energy = 0;
-	uint offset = 0;
-	bool valid = parse_campaign_code(code, n_gravity, n_age, n_sentries, n_energy, offset);
-	if (valid)
-	{
-		harmonize_values(n_gravity, n_age, n_sentries, n_energy);
-		put_values_into_form(n_gravity, n_age, n_sentries, n_energy);
-		this->campaign_seed = offset + get_level_number(code);
-	}
-	return valid;
 }
 
 float Dialog_setup_game::sentry_value(uint n)
@@ -472,7 +382,7 @@ float Dialog_setup_game::get_maximum_value()
 		get_max_n_energy_from_form());
 }
 
-void Dialog_setup_game::create_challenge(uint seed, int raw_level)
+void Dialog_setup_game::setup_challenge(uint seed, int raw_level)
 {
 	int slider_max = ui_dialog_setup_game->horizontalSlider_challenge->maximum();
 	raw_level %= (slider_max+1);
@@ -489,7 +399,7 @@ void Dialog_setup_game::create_challenge(uint seed, int raw_level)
 	bool n_energy_maxed_out = false;
 	while (!(n_sentries_maxed_out && n_gravity_maxed_out && n_age_maxed_out && n_energy_maxed_out))
 	{
-		int k = qrand()%6;
+		int k = qrand()%5; // Double probability for energy reduction.
 		switch (k)
 		{
 			case 0:
