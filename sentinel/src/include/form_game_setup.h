@@ -193,16 +193,6 @@ private:
 	/** @return the value of the most severe challenge according to the
 	 * *_value-fcts and according to the maximum setting given by the qt ui. */
 	float get_maximum_value();
-
-	/** Randomly (using the given seed) fills this form with a
-	 * challenge. The higher the level, the more severe.
-	 * @param uint seed: Use this random seed. Useful for campaign mode, too.
-	 * @param int level: In { 0, .., slider_max } (i.e. 9999).
-	 *   If outside this range level %= (slider_max+1) will be silently applied.
-	 * @return nothing. Instead the rolled values are entered into the form
-	 *   prior to game creation.
-	 */
-	void setup_challenge(uint seed, int level);
 	//< --------------------------------------------------------------
 
 public:
@@ -228,6 +218,16 @@ public:
 	 * @return true if and only if the setup was successful and rule conform. */
 	bool setup_campaign_level(uint code);
 	
+	/** Randomly (using the given seed) fills this form with a
+	 * challenge. The higher the level, the more severe.
+	 * @param uint seed: Use this random seed. Useful for campaign mode, too.
+	 * @param int level: In { 0, .., slider_max } (i.e. 9999).
+	 *   If outside this range level %= (slider_max+1) will be silently applied.
+	 * @return nothing. Instead the rolled values are entered into the form
+	 *   prior to game creation.
+	 */
+	void setup_challenge(uint seed, int level);
+
 	/* @param vector<string>& planets: Will be used to fill the combobox_gravity. */
 	Dialog_setup_game(vector<string>& planets, QWidget* parent=0);
 	~Dialog_setup_game();

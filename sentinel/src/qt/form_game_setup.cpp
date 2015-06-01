@@ -253,12 +253,12 @@ uint Dialog_setup_game::get_n_energy_from_form()
 
 uint Dialog_setup_game::get_max_n_gravity_from_form()
 {
-	return ui_dialog_setup_game->comboBox_age->count();
+	return (ui_dialog_setup_game->comboBox_age->count())-(uint)1;
 }
 
 uint Dialog_setup_game::get_max_n_age_from_form()
 {
-	return ui_dialog_setup_game->comboBox_age->count();
+	return (ui_dialog_setup_game->comboBox_age->count())-(uint)1;
 }
 
 uint Dialog_setup_game::get_max_n_sentries_from_form()
@@ -433,7 +433,6 @@ void Dialog_setup_game::setup_challenge(uint seed, int raw_level)
 		}
 		if (get_value(n_gravity,n_age,n_sentries,n_energy) >= level) break;
 	}
-	
 	harmonize_values(
 		n_gravity,
 		n_age,

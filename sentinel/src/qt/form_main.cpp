@@ -191,7 +191,7 @@ Form_main::Form_main(QWidget* parent, E_DEBUG_LEVEL debug_level,
   this->show();
 #endif
 	uint seed = get_timestamp();
-	uiMainWindow->openGLWidget->set_game(new_game_object(E_GAME_TYPE::CHALLENGE,seed));
+	uiMainWindow->openGLWidget->set_game(new_game_object(E_GAME_TYPE::CUSTOM,seed));
 	//uiMainWindow->openGLWidget->set_game(new_game_object(E_GAME_TYPE::CAMPAIGN,(uint)0));
 	// Needs to be here because the appropriate signal within Game is not
 	// yet connected during Game construction.
@@ -334,6 +334,12 @@ void Form_main::similar_game()
 		// In case of a CAMPAIGN a similar level should be equivalent to restarting.
 		uint seed = (old_game->get_game_type() == E_GAME_TYPE::CAMPAIGN) ? 
 			old_game->get_landscape()->get_seed() : get_timestamp();
+		if (old_game->get_game_type() == E_GAME_TYPE::CHALLENGE)
+		{
+			this->dialog_setup_game->setup_challenge(get_timestamp(),
+				dialog_setup_game->get_game_data()->horizontalSlider_challenge);
+			this->active_game_data = *(this->dialog_setup_game->get_game_data());
+		}
 		restart_game(seed);
 	}
 }
