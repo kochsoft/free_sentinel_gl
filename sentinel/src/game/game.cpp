@@ -945,7 +945,8 @@ void Game::hyperspace_jump()
 	known_sounds->play("plop");
 	float new_phi = landscape->get_random_angle();
 	QPoint old_site = player->get_site();
-	int old_alt = landscape->get_board_sq()->get(old_site)->get_altitude();
+	int old_alt = landscape->get_board_sq()->get(old_site)->get_altitude() +
+		get_board_fg()->get(old_site)->get_top_figure()->get_altitude_above_square();
 	QPoint new_site = pick_hyperspace_destination(old_site, old_alt);
 	
 	if (new_site.x()==-1)
