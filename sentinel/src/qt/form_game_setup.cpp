@@ -48,6 +48,7 @@ Setup_game_data::Setup_game_data(const Setup_game_data& orig)
 {
 	this->lineEdit_campaign = orig.lineEdit_campaign;
 	this->horizontalSlider_challenge = orig.horizontalSlider_challenge;
+	this->spinBox_sentries_max = orig.spinBox_sentries_max;
 	this->spinBox_sentries = orig.spinBox_sentries;
 	this->combobox_gravity = orig.combobox_gravity;
 	this->combobox_age = orig.combobox_age;
@@ -72,6 +73,7 @@ void Setup_game_data::doSnapshot()
 	Ui::Dialog_setup_game* ui = src->get_ui();
 	lineEdit_campaign = ui->lineEdit_campaign->text();
 	horizontalSlider_challenge = ui->horizontalSlider_challenge->value();
+	spinBox_sentries_max = ui->spinBox_sentries->maximum();
 	spinBox_sentries = ui->spinBox_sentries->value();
 	combobox_gravity = ui->comboBox_gravity->currentIndex();
 	combobox_age = ui->comboBox_age->currentIndex();

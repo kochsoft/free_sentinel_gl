@@ -50,6 +50,8 @@ struct Setup_game_data
 	QString lineEdit_campaign;
 	// Difficulty setting for a random challenge.
 	int horizontalSlider_challenge;
+	// What is the maximum value for the sentry spinbox?
+	int spinBox_sentries_max;
 	// How many sentries shall be generated?
 	int spinBox_sentries;
 	// Parameter for the height of the mountains. The stronger the

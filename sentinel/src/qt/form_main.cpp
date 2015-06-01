@@ -58,6 +58,7 @@ void Form_main::setup_dialog_setup()
 		{ planet_vec.push_back(planets[*CI]); }
 	
 	this->dialog_setup_game = new Dialog_setup_game(planet_vec, this);
+	this->dialog_setup_game->setModal(true);
 
 	connect(dialog_setup_game, SIGNAL(start_campaign()),this,SLOT(ok_setup_campaign()));
 	connect(dialog_setup_game, SIGNAL(start_challenge()),this,SLOT(ok_setup_challenge()));
@@ -185,6 +186,7 @@ Form_main::Form_main(QWidget* parent, E_DEBUG_LEVEL debug_level,
 	}
 	setup_form();
 	dialog_about = new Dialog_about(tr("About ..."), "", this);
+	dialog_about->setModal(true);
 #if defined(Q_OS_SYMBIAN)
   this->showMaximized();
 #else
@@ -366,7 +368,7 @@ void Form_main::request_new_game()
 	switch(type)
 	{
 		case E_GAME_TYPE::CAMPAIGN: ok_setup_campaign(); break;
-		case E_GAME_TYPE::CHALLENGE: ok_setup_challenge(); break;
+		case E_GAME_TYPE::CHALLENGE: similar_game(); break;
 		case E_GAME_TYPE::CUSTOM: ok_setup_custom(); break;
 		default: throw "Unknown typ encountered.";
 	}

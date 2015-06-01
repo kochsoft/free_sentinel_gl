@@ -1104,7 +1104,8 @@ Game::Game(E_GAME_TYPE type, uint seed, Setup_game_data* setup, QOpenGLWidget* p
 		setup->spinBox_antagonist_fov,
 		DEFAULT_FADING_TIME,
 		setup->spinBox_energy,
-		setup->spinBox_sentries,
+		setup->spinBox_sentries == -1 ? // -1: Randomized number of sentries.
+			(qrand() % setup->spinBox_sentries_max) : setup->spinBox_sentries,
 		setup->combobox_rotation_type,
 		io,
 		mesh_connection,
