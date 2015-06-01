@@ -294,6 +294,14 @@ private:
 	 * @return vector<Antagonist_target> of all possible targets for this antagonist. */
 	vector<Antagonist_target> get_antagonist_targets(QPoint board_pos, bool seek_trees=false);
 	
+	/** Picks a random square as hyperspace destination. Will not be higher in
+	 * terms of altitude and rather far away from the point of origin.
+	 * @param QPoint old_site: Site of origin for the hyperspace jump.
+	 * @param int old_altitude: Altitude of the square of origin.
+	 * @return (-1,-1) if no destination could be found.
+	 */
+	QPoint pick_hyperspace_destination(QPoint old_site, int old_altitude);
+	
 	/** Checks each board square for stacks of figures (including those of height 1).
 	 * @return the figure on the top of each stack. Obviously a !=0 pointer. */
 	 vector<QPoint_Figure> get_all_top_figures();
@@ -338,6 +346,9 @@ public:
 	
 	/** Updates View_Data for survey mode with this angle. */
 	void set_survey_view_data(float dphi, float dtheta);
+	
+	/** Originally a debugging function this grew up to be a full-fledged game option. */
+	void where_am_i();
 	
 	/** Called by keyPressEvent after 'S' has been pressed.
 	 * Updates the statusBar text such that it describes what the mouse

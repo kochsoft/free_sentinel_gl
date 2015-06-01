@@ -1125,10 +1125,7 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 		
 		case Qt::Key_W: // Where am I? Yes, debug code. But I like it nonetheless :-)
 			{
-				QPoint pos = game->get_player()->get_site();
-				ostringstream oss;
-				oss << "I am at (" << pos.x() << ", " << pos.y() << ")";
-				update_parent_statusBar_text(oss.str().c_str());
+				game->where_am_i();
 			}
 			break;
 // ----------

@@ -27,6 +27,7 @@ using std::endl;
 // ---------------
 
 using std::ostringstream;
+using std::multimap;
 using std::pair;
 
 
@@ -688,6 +689,19 @@ void Game::set_survey_view_data(float dphi, float dtheta)
 		site, center-site, player->get_viewer_data()->get_opening());
 }
 
+void Game::where_am_i()
+{
+	QPoint pos = get_player()->get_site();
+	int alt = get_landscape()->get_altitude(pos.x(),pos.y());
+	Figure* self = get_board_fg()->get(pos);
+	self = self->get_top_figure();
+	if (self == 0) throw "Square of self position is empty.";
+	alt += self->get_altitude_above_square();
+	ostringstream oss;
+	oss << "I am at (" << pos.x() << ", " << pos.y() << "), altitude: " << alt << "m";
+	update_statusBar_text(tr(oss.str().c_str()));
+}
+
 void Game::handle_scan_key(E_POSSIBLE_PLAYER_ACTION action, QPoint board_pos, Figure* figure)
 {
 	ostringstream oss;
@@ -878,6 +892,44 @@ bool Game::hyperspace_request()
 	return true;
 }
 
+QPoint Game::pick_hyperspace_destination(QPoint old_site, int old_alt)
+{
+	//> Step 1: Get a multimap dist => potential destination. --------
+	QPoint res(-1,-1);
+	vector<QPoint> sqbyht = restrict_to_free_non_CONNECTION(
+		landscape->get_coordinates_by_altitude(0,old_alt));
+	if (sqbyht.size() == 0) return res;
+	multimap<int,QPoint> dist_dest;
+	int old_x = old_site.x();
+	int old_y = old_site.y();
+	int dist_sum = 0;
+	for (vector<QPoint>::const_iterator CI=sqbyht.begin();CI!=sqbyht.end();CI++)
+	{
+		int dist =
+			(old_x - CI->x()) * (old_x - CI->x()) +
+			(old_y - CI->y()) * (old_y - CI->y());
+		dist_dest.insert (pair<int,QPoint>(dist,*CI));
+		dist_sum += dist;
+	}
+	//< --------------------------------------------------------------
+	//> Step 2: Pick the random destination prefering far away dest. -
+	int d = qrand() % dist_sum;
+	dist_sum = 0;
+	for (multimap<int,QPoint>::const_iterator CI=dist_dest.begin();CI!=dist_dest.end();CI++)
+	{
+		// Note that higher distances make dist_sum increase in higher steps.
+		// Thus these destinations have a higher probability of being chosen.
+		dist_sum += CI->first;
+		if (dist_sum > d)
+		{
+			res = CI->second;
+			break;
+		}
+	}
+	//< --------------------------------------------------------------
+	return res;
+}
+
 void Game::hyperspace_jump()
 {
 	if (!hyperspace_timer) throw "Unauthorized hyperdrive request!! Use hyperspace_timer.";
@@ -894,9 +946,7 @@ void Game::hyperspace_jump()
 	float new_phi = landscape->get_random_angle();
 	QPoint old_site = player->get_site();
 	int old_alt = landscape->get_board_sq()->get(old_site)->get_altitude();
-	vector<QPoint> sqbyht = restrict_to_free_non_CONNECTION(
-		landscape->get_coordinates_by_altitude(0,old_alt));
-	QPoint new_site = landscape->pick_initially_free_random_square(sqbyht);
+	QPoint new_site = pick_hyperspace_destination(old_site, old_alt);
 	
 	if (new_site.x()==-1)
 	{
