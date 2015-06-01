@@ -350,6 +350,10 @@ public:
 	/** Originally a debugging function this grew up to be a full-fledged game option. */
 	void where_am_i();
 	
+	/** Prints the level number if in campaign mode, the difficulty if in
+	 * challenge mode, or 'Custom game.' else into the status bar. */
+	void display_level();
+	
 	/** Called by keyPressEvent after 'S' has been pressed.
 	 * Updates the statusBar text such that it describes what the mouse
 	 * is pointing at. */

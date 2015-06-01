@@ -1076,11 +1076,6 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 				display_pause_game();
 			}
 			break;
-		case Qt::Key_S: // Analyze scanned object.
-			{
-				game->handle_scan_key(action, board_pos, figure);
-			}
-			break;
 		case Qt::Key_F: // Toggle fullscreen mode.
 			{
 				fullscreen_key_pressed();
@@ -1122,13 +1117,16 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 				modify_brightness(1./.95);
 			}
 			break;
-		
+		case Qt::Key_S: // Analyze scanned object.
+			{
+				game->handle_scan_key(action, board_pos, figure);
+			}
+			break;
 		case Qt::Key_W: // Where am I? Yes, debug code. But I like it nonetheless :-)
 			{
 				game->where_am_i();
 			}
 			break;
-// ----------
 		default: e->ignore(); // Propagate this keypress to parent QObject.
 	}
 }
