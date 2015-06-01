@@ -1198,8 +1198,7 @@ QPoint Landscape::pick_initially_free_random_square(vector<QPoint>& squares_by_h
 	
 }
 
-bool Landscape::place_figure_on_free_random_square(E_FIGURE_TYPE type,
-	Mesh_Data* mesh, vector<QPoint>& squares_by_height, QPoint& site_feedback)
+float Landscape::get_random_spin_sign()
 {
 	float sign = 1.0;
 	switch (randomized_spin)
@@ -1208,10 +1207,17 @@ bool Landscape::place_figure_on_free_random_square(E_FIGURE_TYPE type,
 		case 2: sign = ((float)(qrand() % 2))*2.0-1.0; break;
 		default: break;
 	}
+	return sign;
+}
+
+bool Landscape::place_figure_on_free_random_square(E_FIGURE_TYPE type,
+	Mesh_Data* mesh, vector<QPoint>& squares_by_height, QPoint& site_feedback)
+{
 	site_feedback = this->pick_initially_free_random_square(squares_by_height);
 	if (site_feedback.x() == -1) return false;
 	Figure* tpl = new Figure(type, E_MATTER_STATE::STABLE,
-		mesh, get_random_angle(), 90, sign*spin_period, fov, fading_time);
+		mesh, get_random_angle(), 90,
+		get_random_spin_sign()*spin_period, fov, fading_time);
 	initial_board_fg.set(site_feedback,tpl);
 	return true;
 }
@@ -1240,7 +1246,8 @@ void Landscape::distribute_objects()
 			throw "No peak square found for The Sentinel. This constitutes a bug.";
 		}
 		Figure* tpl = new Figure(E_FIGURE_TYPE::SENTINEL, E_MATTER_STATE::STABLE,
-			mesh_sentinel, get_random_angle(), 90, spin_period, fov, fading_time*2.5);
+			mesh_sentinel, get_random_angle(), 90,
+				get_random_spin_sign()*spin_period, fov, fading_time*2.5);
 		initial_board_fg.get(site)->set_figure_above(tpl);
 	}
 	//< --------------------------------------------------------------

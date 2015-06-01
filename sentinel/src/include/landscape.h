@@ -530,7 +530,11 @@ public:
 	/** @return a random free square from the given vector or (-1,-1) if that fails. */
 	QPoint pick_initially_free_random_square(vector<QPoint>& squares_by_height);
 	
-private:	
+private:
+	/** Depending on this->randomized spin assigns either +1, -1 or a random
+	 * choice out of both. */
+	float get_random_spin_sign();
+	
 	/** Picks an empty square of the desired height and places a freshly created
 	 * Figure of this type there. Also adds a copy to initial_board_fg.
 	 * @param QPoint& site: will be filled with the square that has been chosen
