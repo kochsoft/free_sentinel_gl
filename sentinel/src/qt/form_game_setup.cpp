@@ -276,7 +276,7 @@ uint Dialog_setup_game::get_max_n_energy_from_form()
 int Dialog_setup_game::get_level_number(uint code)
 {
 	code = code >> 16;
-	return ((int)code);
+	return ((int)(++code));
 }
 
 bool Dialog_setup_game::get_next_campaign_code(int energy_loot, uint& new_code)
