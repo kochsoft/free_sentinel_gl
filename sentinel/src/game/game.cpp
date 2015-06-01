@@ -936,12 +936,13 @@ void Game::hyperspace_jump()
 	delete hyperspace_timer;
 	hyperspace_timer = 0;
 
-	// This update_game_status() command needs to be here exactly.
-	update_game_status(E_UPDATE_GAME_STATUS_BY::HYPERSPACE);
-	if (status == E_GAME_STATUS::LOST || status == E_GAME_STATUS::WON) { return; }
+	//> The order of these commands is important. --------------------
 	player->update_energy_units(-3);
+	update_game_status(E_UPDATE_GAME_STATUS_BY::HYPERSPACE);
+	if (status == E_GAME_STATUS::WON) { player->update_energy_units(+3); }
 	update_statusBar_energy(player->get_energy_units());
-	
+	if (status == E_GAME_STATUS::LOST || status == E_GAME_STATUS::WON) { return; }
+	//< --------------------------------------------------------------	
 	known_sounds->play("plop");
 	float new_phi = landscape->get_random_angle();
 	QPoint old_site = player->get_site();
