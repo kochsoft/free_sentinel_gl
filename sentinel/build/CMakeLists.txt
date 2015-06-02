@@ -29,7 +29,7 @@
 #   Visual Studio.
 #
 # If all dependencies are present it should suffice to enter the directory
-# where you found this CMakeLists.txt and cast
+# where you found this CMakeLists.txt and enter
 #   cmake .
 #   make
 # This should generate the executable 'sentinel'.
@@ -75,7 +75,7 @@ cmake_minimum_required(VERSION 2.8.11)
 
 #> Finding my local installation of Qt 5.4. --------------------------
 # Actually first calling
-#   export CMAKE_PREFIX_PATH=[directory containing Qt5Widgets .cmake]
+#   export CMAKE_PREFIX_PATH=[directory .cmake]
 # on the console works as well.
 
 # set(CMAKE_PREFIX_PATH "/home/kochmn/sw/Qt/Qt_5_4/5.4/gcc_64/lib/cmake/")
@@ -150,7 +150,8 @@ add_definitions(${Qt5Multimedia_DEFINITIONS})
 # g++ svd_demo.cpp -I"/usr/include" -L"/usr/lib" -llapacke -lblas
 #< -------------------------------------------------------------------
 
-set (DEBUG 1)
+set (DEBUG 0)
+
 set (SENTINEL_NAME "Free Sentinel GL")
 set (SENTINEL_VERSION_MAJOR "1")
 set (SENTINEL_VERSION_MINOR "1")
@@ -160,16 +161,33 @@ set (SENTINEL_VERSION "${SENTINEL_VERSION_MAJOR}.${SENTINEL_VERSION_MINOR}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS} ${Qt5Multimedia_EXECUTABLE_COMPILE_FLAGS}")
 #  ${Qt5Core_EXECUTABLE_COMPILE_FLAGS} ${Qt5Gui_EXECUTABLE_COMPILE_FLAGS} <- redundant.
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  message("Using GnuCXX compiler.")
-  add_definitions("-O0 -std=c++0x")
-  #add_definitions("-O0 -std=c++0x -llapacke -lblas")
-endif()
+set (OPTIMIZATION_LEVEL "0")
 
 if (DEBUG MATCHES 1)
   message("\nBuilding DEBUG build.")
+  set (OPTIMIZATION_LEVEL "0")
   add_definitions(-Wall)
   set(CMAKE_BUILD_TYPE Debug)
+else()
+  message("\nBuilding RELEASE build.")
+  # TODO: Set this to "2". However, in that case you will experience
+  # trouble of this kind:
+  #   http://stackoverflow.com/questions/2185954/implications-of-template-declaration-definition
+  # The reason being I use templates within the Board class in landscape.*.
+  # Apparently the 'fix' involves having all templated implemenations
+  # within landscape.h. Thanks, but no.
+  # Later I found this text explaining the cause of the problem:
+  #   http://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
+  set (OPTIMIZATION_LEVEL "0")
+  #set(CMAKE_BUILD_TYPE Release)
+endif()
+
+message("Using optimization level ${OPTIMIZATION_LEVEL}.")
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+  message("Using GnuCXX compiler.")
+  add_definitions("-O${OPTIMIZATION_LEVEL} -std=c++0x")
+  #add_definitions("-O0 -std=c++0x -llapacke -lblas")
 endif()
 
 message("\n${SENTINEL_NAME} -- C++ Project V ${SENTINEL_VERSION}.\n")
@@ -195,10 +213,6 @@ file (WRITE "${DIR_BUILD}/mhk_cmake_config.h"
   "#define MHK_VERSION_MAJOR ${SENTINEL_VERSION_MAJOR}\n"
   "#define MHK_VERSION_MINOR ${SENTINEL_VERSION_MINOR}\n"
   "#define MHK_ORGANIZATION \"Koch-Soft\"\n"
-  "#define MHK_GL_MIN_HEIGHT 480\n"
-  "#define MHK_GL_MIN_WIDTH 640\n"
-  "#define MHK_GL_DEFAULT_HEIGHT 768\n"
-  "#define MHK_GL_DEFAULT_WIDTH 1024\n"
   "\n#endif\n"
 )
 # "#define MHK_PATH_ROOT = \"${DIR_BASE}\"\n\n"
@@ -245,7 +259,7 @@ add_executable(sentinel "${DIR_SRC}/sentinel.cpp" ${qt_H_MOC} ${qt_UI_H} ${qt_RC
 # Available modules are listed here: http://doc.qt.io/qt-5/qtmodules.html
 #   find /usr/lib/x86_64-linux-gnu/cmake -iname "*.cmake*" | less
 # Note: http://stackoverflow.com/questions/20266235/cmake-error-qglwidget-no-such-file-or-directory
-qt5_use_modules(sentinel Widgets Gui Core)
+qt5_use_modules(sentinel Widgets Gui Core Multimedia)
 
 # Adding ${qt_UI_H} to this add_library-command is necessary for cmake
 # to ensure that UIC (generating ui_main.h) is called before the
