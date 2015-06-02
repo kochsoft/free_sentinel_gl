@@ -435,10 +435,10 @@ void Square::set_sloped_altitudes(float alt_pp, float alt_mp, float alt_mm, floa
 		QVector4D vert = mesh_prototype->vertices.at(j).vertex;
 		// Note that (x,y) are all in { -0.5, 0.5 }
 		vert.setZ(0.);
-		if (vert.x() < 0. && vert.y() < 0.) { vert.setZ(alt_mm); }
-		if (vert.x() > 0. && vert.y() < 0.) { vert.setZ(alt_pm); }
-		if (vert.x() < 0. && vert.y() > 0.) { vert.setZ(alt_mp); }
-		if (vert.x() > 0. && vert.y() > 0.) { vert.setZ(alt_pp); }
+		if (vert.x() < 0. && vert.y() < 0.) { vert.setZ(qMax(alt_mm,.01f)); }
+		if (vert.x() > 0. && vert.y() < 0.) { vert.setZ(qMax(alt_pm,.01f)); }
+		if (vert.x() < 0. && vert.y() > 0.) { vert.setZ(qMax(alt_mp,.01f)); }
+		if (vert.x() > 0. && vert.y() > 0.) { vert.setZ(qMax(alt_pp,.01f)); }
 		vert.setX( vert.x()+((float)(x)) );
 		vert.setY( vert.y()+((float)(y)) );
 		verts.push_back(vert);

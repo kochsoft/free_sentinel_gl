@@ -460,7 +460,7 @@ void Widget_OpenGl::set_context_to_default_state()
 				glBlendFunc(default_display.sfactor_glBlendFunc,
 					default_display.dfactor_glBlendFunc);
 				break;
-			case GL_CULL_FACE:
+ 			case GL_CULL_FACE:
 				glCullFace(GL_FRONT);
 				break;
 		}
