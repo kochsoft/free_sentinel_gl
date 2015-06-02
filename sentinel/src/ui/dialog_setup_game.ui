@@ -47,13 +47,6 @@
     <property name="horizontalSpacing">
      <number>6</number>
     </property>
-    <item row="7" column="3">
-     <widget class="Line" name="hline_3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="3">
      <widget class="QLineEdit" name="lineEdit_campaign">
       <property name="text">
@@ -463,6 +456,13 @@
      <widget class="QLabel" name="label_general">
       <property name="text">
        <string>General Settings</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1" colspan="4">
+     <widget class="Line" name="hline_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
