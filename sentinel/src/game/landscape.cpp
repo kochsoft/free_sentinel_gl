@@ -562,7 +562,7 @@ template <> string Board<Square>::toString(bool by_plateau_id)
 	return oss.str();
 }
 
-template <class T> Board<T>::Board(int width, int height, bool delete_upon_destruction)
+template <class T> Board<T>::Board(int width, int height, bool delete_contents_upon_destruction)
 {
 	this->width = width;
 	this->height = height;
@@ -589,6 +589,10 @@ template <class T> Board<T>::~Board()
 	}
 	free (board);
 }
+
+//The explicit instantiation part
+template class Board<Figure>; 
+template class Board<Square>;
 //< ------------------------------------------------------------------
 //> Landscape. -------------------------------------------------------
 vector<int> Landscape::random_permutation(int n)

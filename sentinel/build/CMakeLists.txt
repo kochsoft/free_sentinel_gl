@@ -170,15 +170,7 @@ if (DEBUG MATCHES 1)
   set(CMAKE_BUILD_TYPE Debug)
 else()
   message("\nBuilding RELEASE build.")
-  # TODO: Set this to "2". However, in that case you will experience
-  # trouble of this kind:
-  #   http://stackoverflow.com/questions/2185954/implications-of-template-declaration-definition
-  # The reason being I use templates within the Board class in landscape.*.
-  # Apparently the 'fix' involves having all templated implemenations
-  # within landscape.h. Thanks, but no.
-  # Later I found this text explaining the cause of the problem:
-  #   http://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
-  set (OPTIMIZATION_LEVEL "0")
+  set (OPTIMIZATION_LEVEL "2")
   #set(CMAKE_BUILD_TYPE Release)
 endif()
 
