@@ -174,10 +174,8 @@ else()
   #set(CMAKE_BUILD_TYPE Release)
 endif()
 
-message("Using optimization level ${OPTIMIZATION_LEVEL}.")
-
 if(CMAKE_COMPILER_IS_GNUCXX)
-  message("Using GnuCXX compiler.")
+  message("Using GnuCXX compiler and optimization -O${OPTIMIZATION_LEVEL}.")
   add_definitions("-O${OPTIMIZATION_LEVEL} -std=c++0x")
   #add_definitions("-O0 -std=c++0x -llapacke -lblas")
 endif()
