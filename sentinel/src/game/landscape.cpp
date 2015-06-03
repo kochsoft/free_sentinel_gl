@@ -392,6 +392,72 @@ QVector3D Square::qvec4_x_qvec4(QVector4D u, QVector4D v, bool normalize)
 	return n;
 }
 
+vector<QVector3D> Square::get_sloped_normal_vectors(vector<QVector4D>& verts)
+{
+	if (verts.size() != 4) throw "Expected 4 vertices exactly.";
+	vector<QVector3D> norm;
+	norm.push_back(qvec4_x_qvec4(verts.at(1),verts.at(3),true));
+	norm.push_back(qvec4_x_qvec4(verts.at(2),verts.at(0),true));
+	norm.push_back(qvec4_x_qvec4(verts.at(3),verts.at(1),true));
+	norm.push_back(qvec4_x_qvec4(verts.at(0),verts.at(2),true));
+	return norm;
+}
+
+bool Square::turn_sloped_square_by_90_degrees_if_necessary(vector<Vertex_Data>& vertex_data)
+{
+	if (vertex_data.size() != 4) throw "Expected 4 vertex_data sets exactly.";
+	//> Step 1: Determine if there is a flat-foot situation. ---------
+	GLushort tr0[] = {
+		mesh_prototype->elements.at(0),
+		mesh_prototype->elements.at(1),
+		mesh_prototype->elements.at(2)
+	};
+	GLushort tr1[] = {
+		mesh_prototype->elements.at(3),
+		mesh_prototype->elements.at(4),
+		mesh_prototype->elements.at(5)
+	};
+	float heights[] =
+	{
+		vertex_data.at(0).vertex.z(),
+		vertex_data.at(1).vertex.z(),
+		vertex_data.at(2).vertex.z(),
+		vertex_data.at(3).vertex.z()
+	};
+	// A candidate does not touch a diagonal. I.e.: Is not in both triangles at once.
+	// In addition he is the only point on his height.
+	bool found_flat_foot = false;
+	for (GLushort j=0;j<4;j++)
+	{
+		// Question 1: Is the j on the intersection of both triangles?
+		bool found_in_tr0 = false;
+		bool found_in_tr1 = false;
+		for (GLushort k=0;k<3;k++) if (tr0[k] == j) { found_in_tr0 = true; break; }
+		for (GLushort k=0;k<3;k++) if (tr1[k] == j) { found_in_tr1 = true; break; }
+		if (found_in_tr0 && found_in_tr1) continue; // Not flat foot candidate here.
+
+		float a0 = heights[j];
+		float a1 = heights[(j+1)%4];
+		float a2 = heights[(j+2)%4];
+		float a3 = heights[(j+3)%4];
+		// Question 2: Do all other corners share the identical height?
+		if (!(a1==a2 && a1==a3)) continue;
+		// Question 3: Is the candidate the only one with his height?
+		if (a0 == a1) continue;
+
+		// Still here? We found a flat-foot!
+		found_flat_foot = true;
+		break;
+	}
+	if (!found_flat_foot) return false; // Nothing to do.
+	//< --------------------------------------------------------------
+	//> Step 2: Correct the flat-foot situation. ---------------------
+	vertex_data.push_back(vertex_data.at(0));
+	vertex_data.erase(vertex_data.begin());
+	//< --------------------------------------------------------------
+	return true;
+}
+
 void Square::set_altitude(int level, int x, int y)
 {
 	if (type == E_SQUARE_TYPE::CONNECTION) throw "attempt to set altitude for CONNECTION square.";
@@ -447,11 +513,7 @@ void Square::set_sloped_altitudes(float alt_pp, float alt_mp, float alt_mm, floa
 		vert.setY( vert.y()+((float)(y)) );
 		verts.push_back(vert);
 	}
-	vector<QVector3D> norm;
-	norm.push_back(qvec4_x_qvec4(verts.at(1),verts.at(3),true));
-	norm.push_back(qvec4_x_qvec4(verts.at(2),verts.at(0),true));
-	norm.push_back(qvec4_x_qvec4(verts.at(3),verts.at(1),true));
-	norm.push_back(qvec4_x_qvec4(verts.at(0),verts.at(2),true));
+	vector<QVector3D> norm = get_sloped_normal_vectors(verts);
 
 	this->vertices.clear();
 	for (int j=0;j<4;j++)
@@ -459,10 +521,11 @@ void Square::set_sloped_altitudes(float alt_pp, float alt_mp, float alt_mm, floa
 		this->vertices.push_back(Vertex_Data(
 			verts.at(j),
 			norm.at(j),
-			mesh_prototype->vertices.at(j).tex_coord,	
+			mesh_prototype->vertices.at(j).tex_coord,
 			QVector4D(1,1,1,1)
 		 ));
 	}
+	turn_sloped_square_by_90_degrees_if_necessary(this->vertices);
 }
 
 bool Square::transfer_vertices_to_GPU()

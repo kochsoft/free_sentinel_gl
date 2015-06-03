@@ -340,6 +340,29 @@ public:
 	/** Convenience getter for this square's game altitude.
 	 * @return -1 if it has no unique game altitude. Else said altitude. */
 	int get_altitude() { return level; }
+
+	/** Tool function for set_sloped_altitudes(..).
+	 * Determines and sets the normal vectors for the sloped square.
+	 * @param vector<QVector4D>& vertices: Vertices. For normal vector
+	 * calculation always the left and the right neighbor will be used.
+	 * @return Normal vector vector<QVector3D> associated with vertices. */
+	vector<QVector3D> get_sloped_normal_vectors(vector<QVector4D>& vertices);
+
+	/** Tool function for set_sloped_altitudes(..). Like everything else in
+	 * openGL a square, too, is made out of triangles. And as simple as it gets,
+	 * too: There are precisely two triangles. However, this simplicity becomes
+	 * a problem for squares where one corner, that is not touching the diagonal
+	 * of the square, is on one height a0 and all others are on a1!=a0. This
+	 * leads to one of the triangles being horizontal and to what I call the
+	 * 'flat-foot effect'. A simple way to counter that is to simply reorder
+	 * the Vertex_Data vector such that the associated elements build the triangles
+	 * in such a way that the a0-corner touches a diagonal.
+	 * Explicitly spoken: Reorder the given vector [0,1,2,3] => [1,2,3,0].
+	 * @param vector<Vertex_Data>&: Reference to the target vector.
+	 * @return true if and only if the target square was a flat-foot case.
+	 * */
+	bool turn_sloped_square_by_90_degrees_if_necessary(vector<Vertex_Data>&);
+
 	/** During the landscape generation it may become necessary to alter this value. 
 	 * If that happens this->vertices will also be updated.
 	 * This function is for ODD and EVEN squares. It requires that the E_SQUARE_TYPE
