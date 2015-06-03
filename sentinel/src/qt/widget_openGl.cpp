@@ -1071,6 +1071,7 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 		case Qt::Key_P: // Toggle user driven pause mode.
 			{
 				is_user_paused = !is_user_paused;
+				if (!is_user_paused) is_auto_paused = false;
 				if (is_user_paused) { game->pause_timers(); }
 				else { game->unpause_timers(); }
 				display_pause_game();
