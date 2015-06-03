@@ -223,7 +223,7 @@ public:
 	/** Randomly (using the given seed) fills this form with a
 	 * challenge. The higher the level, the more severe.
 	 * @param uint seed: Use this random seed. Useful for campaign mode, too.
-	 * @param int level: In { 0, .., slider_max } (i.e. 9999).
+	 * @param int level: In { 0, .., slider_max }
 	 *   If outside this range level %= (slider_max+1) will be silently applied.
 	 * @return nothing. Instead the rolled values are entered into the form
 	 *   prior to game creation.

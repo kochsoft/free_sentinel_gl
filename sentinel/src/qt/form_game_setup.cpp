@@ -255,7 +255,7 @@ uint Dialog_setup_game::get_n_energy_from_form()
 
 uint Dialog_setup_game::get_max_n_gravity_from_form()
 {
-	return (ui_dialog_setup_game->comboBox_age->count())-(uint)1;
+	return (ui_dialog_setup_game->comboBox_gravity->count())-(uint)1;
 }
 
 uint Dialog_setup_game::get_max_n_age_from_form()
@@ -343,26 +343,26 @@ void Dialog_setup_game::harmonize_values(uint& n_gravity,
 
 float Dialog_setup_game::sentry_value(uint n)
 {
-	// Maximum 1800 for 5 sentries.
-	return 360.*((float)n);
+	// Maximum 360 for 5 sentries.
+	return 72.*((float)n);
 }
 
 float Dialog_setup_game::gravity_value(uint n)
 {
-	// Maximum 1500 for 5.
-	return 300.*((float)n);
+	// Maximum 300 for 5.
+	return 60.*((float)n);
 }
 
 float Dialog_setup_game::age_value(uint n)
 {
-	// Maximum 800 for 4.
-	return 200.*((float)n);
+	// Maximum 160 for 4.
+	return 40.*((float)n);
 }
 
 float Dialog_setup_game::energy_value(uint n)
 {
-	// Maximum 3600 for 15.
-	return 240.*((float)n);
+	// Maximum 600 for 10.
+	return 60.*((float)n);
 }
 
 float Dialog_setup_game::get_value(uint n_gravity,
@@ -388,7 +388,7 @@ void Dialog_setup_game::setup_challenge(uint seed, int raw_level)
 {
 	int slider_max = ui_dialog_setup_game->horizontalSlider_challenge->maximum();
 	raw_level %= (slider_max+1);
-	// Pull level in the attainable range.
+	// Pull level into the attainable range.
 	float level = get_maximum_value()*((float)raw_level)/((float)slider_max);
 	qsrand(seed);
 	uint n_sentries = 0;

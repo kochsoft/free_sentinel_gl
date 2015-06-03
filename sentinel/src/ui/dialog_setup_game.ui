@@ -99,7 +99,7 @@
     <item row="3" column="3">
      <widget class="QSlider" name="horizontalSlider_challenge">
       <property name="maximum">
-       <number>9999</number>
+       <number>1999</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
