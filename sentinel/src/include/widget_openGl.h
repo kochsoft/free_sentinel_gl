@@ -353,8 +353,8 @@ protected:
 	
 	virtual void enterEvent(QEvent*);
 	virtual void leaveEvent(QEvent*);
-	//virtual void focusOutEvent(QFocusEvent*);
 	//virtual void focusInEvent(QFocusEvent*);
+	//virtual void focusOutEvent(QFocusEvent*);
 	//< --------------------------------------------------------------
 
 public slots:

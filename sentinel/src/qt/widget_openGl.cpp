@@ -982,6 +982,9 @@ void Widget_OpenGl::leaveEvent(QEvent* e)
 	display_pause_game();
 }
 
+// void Widget_OpenGl::focusInEvent(QFocusEvent* e) { enterEvent(e); }
+// void Widget_OpenGl::focusOutEvent(QFocusEvent* e) { leaveEvent(e); }
+
 void Widget_OpenGl::modify_brightness(float factor)
 {
 	if (factor == 1.0)
@@ -1069,9 +1072,10 @@ void Widget_OpenGl::keyPressEvent(QKeyEvent* e)
 				break;
 			}
 		case Qt::Key_P: // Toggle user driven pause mode.
+			if (this->underMouse())
 			{
 				is_user_paused = !is_user_paused;
-				if (!is_user_paused) is_auto_paused = false;
+				is_auto_paused = false;
 				if (is_user_paused) { game->pause_timers(); }
 				else { game->unpause_timers(); }
 				display_pause_game();
