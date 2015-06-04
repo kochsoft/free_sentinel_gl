@@ -336,7 +336,7 @@ void Dialog_setup_game::harmonize_values(uint& n_gravity,
 {
 	// TODO: Optimize these criteria some time.
 	if (n_gravity > 3) { n_age = qMin(n_age, (uint)2); }
-	if (n_gravity > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)2); }
+	if (n_gravity > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)3); }
 	if (n_sentries > 3) { n_age = qMin(n_age, (uint)2); }
 	if (n_sentries > 3) { n_energy = qMin(n_energy, get_max_n_energy_from_form()-(uint)2); }
 }
