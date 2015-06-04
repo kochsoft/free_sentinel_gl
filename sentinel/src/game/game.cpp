@@ -203,8 +203,13 @@ E_POSSIBLE_PLAYER_ACTION Game::get_possible_interactions(QPoint board_pos, Figur
 				{
 					res = E_POSSIBLE_PLAYER_ACTION::MANIFESTATION;
 				} else {
-					// Note that block cases have already been handled.
-					res = E_POSSIBLE_PLAYER_ACTION::ABSORPTION;
+					if (figure->get_type() == E_FIGURE_TYPE::TOWER)
+					{
+						res = E_POSSIBLE_PLAYER_ACTION::NO;
+					} else {
+						// Note that block cases have already been handled.
+						res = E_POSSIBLE_PLAYER_ACTION::ABSORPTION;
+					}
 				}
 			}
 			break;
