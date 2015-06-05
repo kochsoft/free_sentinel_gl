@@ -113,6 +113,17 @@ void Setup_game_data::write_onto_src()
 	ui->spinBox_object_resilience->setValue(spinBox_object_resilience);
 	ui->spinBox_antagonist_fov->setValue(spinBox_antagonist_fov);
 }
+
+void Setup_game_data::write_campaign_data_onto_src()
+{
+	if (src==0) throw "Cannot write on non-existing source!";
+	Ui::Dialog_setup_game* ui = src->get_ui();
+	ui->lineEdit_campaign->setText(lineEdit_campaign);
+	ui->spinBox_sentries->setValue(spinBox_sentries);
+	ui->comboBox_gravity->setCurrentIndex(combobox_gravity);
+	ui->comboBox_age->setCurrentIndex(combobox_age);
+	ui->spinBox_energy->setValue(spinBox_energy);
+}
 //< ------------------------------------------------------------------
 
 Dialog_setup_game::Dialog_setup_game(vector<string>& planets, QWidget* parent)

@@ -108,6 +108,9 @@ struct Setup_game_data
 	/** Checks if src != 0. If not sets its values to the values
 	 * within this structs data. */
 	void write_onto_src();
+	/** Like write_onto_src(). But restricts itself to the campaign code
+	 * and custom settings. */
+	void write_campaign_data_onto_src();
 };
 
 class Dialog_setup_game : public QDialog

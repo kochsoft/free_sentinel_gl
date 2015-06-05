@@ -320,7 +320,8 @@ void Form_main::restart_game(uint seed)
 	// This line is necessary. It reverts to the old campaign code in
 	// case of the player deciding to replay a campaign level after
 	// the level is won and a new code was issued but before the new level is started.
-	this->active_game_data.write_onto_src();
+	if (old_game->get_game_type()==E_GAME_TYPE::CAMPAIGN)
+		this->active_game_data.write_campaign_data_onto_src();
 	seed = seed ? seed : old_game->get_landscape()->get_seed();
 	E_GAME_TYPE type = old_game->get_game_type();
 	Game* new_game = new_game_object(
