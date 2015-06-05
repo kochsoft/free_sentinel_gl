@@ -75,7 +75,7 @@ private:
 	 */
 	static bool inv_2x2(float in11, float in12, float in21, float in22,
 		float& out11, float& out12, float& out21, float& out22,
-		float min_angle=1.);
+		float min_angle);
 	
 	/** Returns the normalized direction vector the mouse is pointing at. */
 	QVector3D get_mouse_direction(float mouse_gl_x, float mouse_gl_y, Viewer_Data* vd);

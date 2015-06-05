@@ -91,7 +91,7 @@ bool Scanner::is_in_triangle(float mouse_gl_x, float mouse_gl_y,
 	// Note: If it is not invertible the triangle has its span into the
 	// z dimension and appears as a line on the screen and hence is not clickable.
 	float inv11, inv12, inv21, inv22;
-	bool invertible = inv_2x2(b.x(),c.x(),b.y(),c.y(),inv11,inv12,inv21,inv22,.2);
+	bool invertible = inv_2x2(b.x(),c.x(),b.y(),c.y(),inv11,inv12,inv21,inv22,.02);
 	if (!invertible) return false;
 	float v1 = mouse_gl_x - a.x();
 	float v2 = mouse_gl_y - a.y();
