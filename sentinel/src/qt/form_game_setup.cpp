@@ -93,7 +93,7 @@ void Setup_game_data::doSnapshot()
 
 void Setup_game_data::write_onto_src()
 {
-	if (src==0) return; // Nothing to do.
+	if (src==0) throw "Cannot write on non-existing source!";
 	Ui::Dialog_setup_game* ui = src->get_ui();
 	ui->lineEdit_campaign->setText(lineEdit_campaign);
 	ui->horizontalSlider_challenge->setValue(horizontalSlider_challenge);
